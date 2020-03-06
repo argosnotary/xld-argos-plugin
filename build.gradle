@@ -1,0 +1,11 @@
+plugins {
+    id "com.github.hierynomus.license" version "0.15.0"
+    id "com.xebialabs.xldp" version "1.0.5"
+}
+
+version="1.0.1"
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
