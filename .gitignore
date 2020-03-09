@@ -7,3 +7,9 @@
 
 # Ignore Gradle build output directory
 build
+/native/
+/bin/
+/.classpath
+/caches/
+/daemon/
+/wrapper/
