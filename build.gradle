@@ -1,9 +1,12 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id "com.github.hierynomus.license" version "0.15.0"
     id "com.xebialabs.xldp" version "1.0.5"
 }
 
 version="0.0.1-RC3"
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 def apiVersion = '2019.3.4'
@@ -12,7 +15,6 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
-
 
 repositories {
     mavenCentral()
@@ -23,6 +25,13 @@ repositories {
 
 dependencies {
     compile "com.xebialabs.deployit:udm-plugin-api:$apiVersion"
+}
+
+processResources.configure {
+  filter ReplaceTokens, tokens: [
+    'project.version': version.toString(),
+    'project.name': rootProject.name
+  ]
 }
 
 license {
