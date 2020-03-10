@@ -23,6 +23,7 @@ import com.xebialabs.deployit.plugin.api.udm.base.BaseConfigurationItem;
 @Metadata(root = Metadata.ConfigurationItemRoot.ENVIRONMENTS, label = "Non Personal Account", description = "An Non Personal Account used for the Argos Notary Service")
 @TypeIcon(value="icons/types/argos.NonPersonalAccount.svg")
 public class NonPersonalAccount extends BaseConfigurationItem {
+
     @Property(required = true, label = "Key identifier of the Non Personal Account on the Argos Service")
     private String keyId;
 

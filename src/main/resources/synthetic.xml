@@ -24,5 +24,10 @@
                 labels segrageted by &quot;.&quot;, a &quot;:&quot; followed by the supply chain name, all in lower case."/>
         </property>
     </type-modification>
+    
+    <type-modification type="udm.Version">
+        <method name="verifyWithArgos" label="Verify with Argos" delegate="jythonScript" script="argos_scripts/verify_with_argos.py">
+        </method>
+    </type-modification>
 
 </synthetic>
