@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 @Prefix(value="argos")
-package com.xebialabs.deployit.community.argos;
+package com.xebialabs.deployit.community.argos.model;
 
 import com.xebialabs.deployit.plugin.api.udm.Prefix;

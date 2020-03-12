@@ -13,21 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.xebialabs.deployit.community.argos;
+package com.xebialabs.deployit.community.argos.model;
 
 import com.xebialabs.deployit.plugin.api.udm.Metadata;
 import com.xebialabs.deployit.plugin.api.udm.Property;
 import com.xebialabs.deployit.plugin.api.udm.TypeIcon;
 import com.xebialabs.deployit.plugin.api.udm.base.BaseConfigurationItem;
 
-@Metadata(root = Metadata.ConfigurationItemRoot.ENVIRONMENTS, label = "Non Personal Account", description = "An Non Personal Account used for the Argos Notary Service")
-@TypeIcon(value="icons/types/argos.NonPersonalAccount.svg")
-public class NonPersonalAccount extends BaseConfigurationItem {
+@SuppressWarnings("serial")
+@Metadata(root = Metadata.ConfigurationItemRoot.CONFIGURATION, description = "Server Configuration for REST api")
+@TypeIcon(value="icons/types/xld.svg")
+public class XldClientConfig extends BaseConfigurationItem {
 
-    @Property(required = true, label = "Key identifier of the Non Personal Account on the Argos Service")
-    private String keyId;
+    @Property(required = true)
+    private String username;
 
-    @Property(required = true, password = true, label = "Passphrase used to authenticate to the Argos Service")
-    private String passphrase;
+    @Property(password = true)
+    private String password;
 
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+    
 }
