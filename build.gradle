@@ -26,10 +26,13 @@ repositories {
 
 dependencies {
     compile "com.xebialabs.deployit:udm-plugin-api:$apiVersion"
+    compile "com.xebialabs.deployit:engine-api:$apiVersion"
     compile "com.rabobank.argos:argos4j:0.0.1-RC3"
     
     compile "org.projectlombok:lombok:1.18.12"
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    
+    testCompile "org.mockito:mockito-junit-jupiter:3.1.0"
     
     distBundle "com.rabobank.argos:argos4j:0.0.1-RC3"
     

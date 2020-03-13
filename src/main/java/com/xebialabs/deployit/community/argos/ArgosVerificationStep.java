@@ -32,7 +32,7 @@ public class ArgosVerificationStep implements Step {
     @Override
     public StepExitCode execute(ExecutionContext context) throws Exception {
         if (Argos4jVerifier.versionIsValid(context, version.getId())) {
-            context.logOutput(String.format("Package: %s is valid according Argos Notary Verification", version.getName()));
+            context.logOutput(String.format(ArgosConfiguration.getArgosValidTemplate(), version.getName()));
             return StepExitCode.SUCCESS;
         } else {
             return handleFail(context);
@@ -41,11 +41,10 @@ public class ArgosVerificationStep implements Step {
     
     private StepExitCode handleFail(ExecutionContext context) {
         if (ActionOnInvalid.ABORT.equals(ArgosConfiguration.getActionOnInvalid())) {
-            context.logError(String.format("Package: %s has an invalid Argos Notary Verification", version.getName()));
+            context.logError(String.format(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.ABORT), version.getName()));
             return StepExitCode.FAIL;
         } else {
-            context.logError(String.format("Package: %s has an invalid Argos Notary Verification", version.getName()));
-            context.logError("This is still a warning");
+            context.logError(String.format(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.WARN), version.getName()));
             return StepExitCode.SUCCESS;
         }
     }

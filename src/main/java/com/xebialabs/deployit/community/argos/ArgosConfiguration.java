@@ -38,8 +38,18 @@ public class ArgosConfiguration {
     public static final String PROPERTY_ARGOS_PERSONAL_ACCOUNT = "argosNonPersonalAccount";
     public static final String PROPERTY_VERIFY_WITH_ARGOS = "verifyWithArgos";
     public static final String PROPERTY_ARGOS_SUPPLYCHAIN = "argosSupplyChain";
+    public static final String PROPERTY_ACTION_ON_INVALID = "argos.action.on.invalid";
+    public static final String PROPERTY_VERIFICATION_STATUS = "argos.verification.status";
+    public static final String PROPERTY_ARGOS_SERVICE_BASE_URL = "argos.service.base.url";
+    public static final String PROPERTY_XLD_BASE_URL = "xld.base.url";
+    public static final String PROPERTY_XLD_CLIENT_CONF_ID = "argos.xld.client.conf.id";
+    public static final String PROPERTY_ARGOS_ABORT_TEMPLATE = "argos.abort.template";
+    public static final String PROPERTY_ARGOS_WARN_TEMPLATE = "argos.warn.template";
+    public static final String PROPERTY_ARGOS_VALID_TEMPLATE = "argos.valid.template";
+    public static final String PROPERTY_ARGOS_RESULT_PREFIX = "argos.result.prefix";
     
-    private static final String EXPORT_URI = "%s/deployit/export/%s";
+    private static final String KEY_URI = "%s/export/deploymentpackage/%s";    
+    private static final String EXPORT_URI = "%s/internal/download/%s";
 
     private static final Logger logger = LoggerFactory.getLogger(ArgosConfiguration.class);
 
@@ -67,23 +77,23 @@ public class ArgosConfiguration {
     }
 
     public static ActionOnInvalid getActionOnInvalid() {
-        return ActionOnInvalid.valueOf(argosProperties.getProperty("argos.action.on.invalid"));
+        return ActionOnInvalid.valueOf(argosProperties.getProperty(PROPERTY_ACTION_ON_INVALID));
     }
 
-    public static ArgosVerificationStatus getArgosVerification() {
-        return ArgosVerificationStatus.valueOf(argosProperties.getProperty("argos.verification"));
+    public static ArgosVerificationStatus getArgosVerificationStatus() {
+        return ArgosVerificationStatus.valueOf(argosProperties.getProperty(PROPERTY_VERIFICATION_STATUS));
     }
     
     public static String getArgosServerBaseUrl() {
-        return argosProperties.getProperty("argos.service.base.url"); 
+        return argosProperties.getProperty(PROPERTY_ARGOS_SERVICE_BASE_URL); 
     }
     
-    public static URI getXldUriForExport(ExecutionContext context, String fragment) {
-        XldClientConfig xldConf = context.getRepository().read(argosProperties.getProperty("argos.xld.client.conf.id"));
-        String xldBaseUrl = argosProperties.getProperty("argos.xld.base.url");
+    public static URI getXldUriForDownloadKey(ExecutionContext context, String fragment) {
+        XldClientConfig xldConf = context.getRepository().read(argosProperties.getProperty(PROPERTY_XLD_CLIENT_CONF_ID));
+        String xldBaseUrl = argosProperties.getProperty(PROPERTY_XLD_BASE_URL);
         URI xldUri = null;
         try {
-            xldUri = new URI(String.format(EXPORT_URI, xldBaseUrl, fragment));
+            xldUri = new URI(String.format(KEY_URI, xldBaseUrl, fragment));
             xldUri = new URI(
                     xldUri.getScheme(), 
                     xldConf.getUsername() + ":" + xldConf.getPassword(), 
@@ -96,6 +106,40 @@ public class ArgosConfiguration {
             logger.error(e.getMessage());
         }
         return xldUri;
+    }
+    
+    public static URI getXldUriForExport(ExecutionContext context, String key) {
+        XldClientConfig xldConf = context.getRepository().read(argosProperties.getProperty(PROPERTY_XLD_CLIENT_CONF_ID));
+        String xldBaseUrl = argosProperties.getProperty(PROPERTY_XLD_BASE_URL);
+        URI xldUri = null;
+        try {
+            xldUri = new URI(String.format(EXPORT_URI, xldBaseUrl, key));
+            xldUri = new URI(
+                    xldUri.getScheme(), 
+                    xldConf.getUsername() + ":" + xldConf.getPassword(), 
+                    xldUri.getHost(),
+                    xldUri.getPort(), 
+                    xldUri.getPath(), 
+                    xldUri.getQuery(), 
+                    xldUri.getFragment());
+        } catch (URISyntaxException e) {
+            logger.error(e.getMessage());
+        }
+        return xldUri;
+    }
+    
+    public static String getArgosActionTemplate(ActionOnInvalid action) {
+        if (ActionOnInvalid.ABORT.equals(action)) {
+            return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX)+argosProperties.getProperty(PROPERTY_ARGOS_ABORT_TEMPLATE);
+        }
+        if (ActionOnInvalid.WARN.equals(action)) {
+            return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX)+argosProperties.getProperty(PROPERTY_ARGOS_WARN_TEMPLATE);
+        }
+        return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX);        
+    }
+    
+    public static String getArgosValidTemplate() {
+        return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX)+argosProperties.getProperty(PROPERTY_ARGOS_VALID_TEMPLATE);
     }
 
 }

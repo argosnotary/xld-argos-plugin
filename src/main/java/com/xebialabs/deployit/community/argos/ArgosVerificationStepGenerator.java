@@ -45,7 +45,7 @@ public class ArgosVerificationStepGenerator {
     }
 
     private static boolean enabled(final Environment environment) {
-        return ArgosVerificationStatus.ENABLED.equals(ArgosConfiguration.getArgosVerification()) || 
+        return ArgosVerificationStatus.ENABLED.equals(ArgosConfiguration.getArgosVerificationStatus()) || 
                 (environment.hasProperty(ArgosConfiguration.PROPERTY_VERIFY_WITH_ARGOS) 
                         && ArgosVerificationStatus.ENABLED.equals(environment.<ArgosVerificationStatus>getProperty(ArgosConfiguration.PROPERTY_VERIFY_WITH_ARGOS)));
     }
