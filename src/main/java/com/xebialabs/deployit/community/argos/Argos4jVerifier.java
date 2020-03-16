@@ -43,8 +43,7 @@ import feign.auth.BasicAuthRequestInterceptor;
 
 public class Argos4jVerifier {
 
-    public static boolean versionIsValid(ExecutionContext context, String versionId) {
-        Version version = context.getRepository().read(versionId);
+    public static boolean versionIsValid(ExecutionContext context, Version version) {
         String supplyChain = version.getApplication().getProperty(ArgosConfiguration.PROPERTY_ARGOS_SUPPLYCHAIN);
         NonPersonalAccount npaAccount = version.getApplication().getProperty(ArgosConfiguration.PROPERTY_ARGOS_PERSONAL_ACCOUNT);
         if (npaAccount == null) {
