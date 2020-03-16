@@ -17,8 +17,8 @@ package com.xebialabs.deployit.community.argos;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -26,6 +26,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.rabobank.argos.argos4j.Argos4jError;
 import com.xebialabs.deployit.community.argos.model.ActionOnInvalid;
 import com.xebialabs.deployit.community.argos.model.ArgosVerificationStatus;
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;
@@ -34,7 +35,9 @@ import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 
 public class ArgosConfiguration {
     
-    public static final List<Operation> OPERATIONS_WITHOUT_VERIFICATION = Arrays.asList(Operation.NOOP, Operation.DESTROY);
+    public static final List<Operation> OPERATIONS_WITHOUT_VERIFICATION = 
+            Arrays.asList(Operation.NOOP, Operation.DESTROY);
+    
     public static final String PROPERTY_ARGOS_PERSONAL_ACCOUNT = "argosNonPersonalAccount";
     public static final String PROPERTY_VERIFY_WITH_ARGOS = "verifyWithArgos";
     public static final String PROPERTY_ARGOS_SUPPLYCHAIN = "argosSupplyChain";
@@ -88,54 +91,32 @@ public class ArgosConfiguration {
         return argosProperties.getProperty(PROPERTY_ARGOS_SERVICE_BASE_URL); 
     }
     
-    public static URI getXldUriForDownloadKey(ExecutionContext context, String fragment) {
-        XldClientConfig xldConf = context.getRepository().read(argosProperties.getProperty(PROPERTY_XLD_CLIENT_CONF_ID));
-        String xldBaseUrl = argosProperties.getProperty(PROPERTY_XLD_BASE_URL);
-        URI xldUri = null;
-        try {
-            xldUri = new URI(String.format(KEY_URI, xldBaseUrl, fragment));
-            xldUri = new URI(
-                    xldUri.getScheme(), 
-                    xldConf.getUsername() + ":" + xldConf.getPassword(), 
-                    xldUri.getHost(),
-                    xldUri.getPort(), 
-                    xldUri.getPath(), 
-                    xldUri.getQuery(), 
-                    xldUri.getFragment());
-        } catch (URISyntaxException e) {
-            logger.error(e.getMessage());
-        }
-        return xldUri;
+    public static String getXldUrlForDownloadKey(ExecutionContext context, String fragment) {
+        return String.format(KEY_URI, argosProperties.getProperty(PROPERTY_XLD_BASE_URL), fragment);
     }
     
-    public static URI getXldUriForExport(ExecutionContext context, String key) {
-        XldClientConfig xldConf = context.getRepository().read(argosProperties.getProperty(PROPERTY_XLD_CLIENT_CONF_ID));
-        String xldBaseUrl = argosProperties.getProperty(PROPERTY_XLD_BASE_URL);
-        URI xldUri = null;
+    public static URL getXldUrlForExport(ExecutionContext context, String key) {
+        String url = String.format(EXPORT_URI, argosProperties.getProperty(PROPERTY_XLD_BASE_URL), key);
         try {
-            xldUri = new URI(String.format(EXPORT_URI, xldBaseUrl, key));
-            xldUri = new URI(
-                    xldUri.getScheme(), 
-                    xldConf.getUsername() + ":" + xldConf.getPassword(), 
-                    xldUri.getHost(),
-                    xldUri.getPort(), 
-                    xldUri.getPath(), 
-                    xldUri.getQuery(), 
-                    xldUri.getFragment());
-        } catch (URISyntaxException e) {
-            logger.error(e.getMessage());
+            return new URL(url);
+        } catch (MalformedURLException e) {        
+            throw new Argos4jError(url+": " + e.getMessage());
         }
-        return xldUri;
+    }
+    
+    public static XldClientConfig getXldClientConfig(ExecutionContext context) {
+        return context.getRepository().read(argosProperties.getProperty(PROPERTY_XLD_CLIENT_CONF_ID));
     }
     
     public static String getArgosActionTemplate(ActionOnInvalid action) {
-        if (ActionOnInvalid.ABORT.equals(action)) {
+        switch(action) {
+        case ABORT: 
             return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX)+argosProperties.getProperty(PROPERTY_ARGOS_ABORT_TEMPLATE);
-        }
-        if (ActionOnInvalid.WARN.equals(action)) {
+        case WARN:
             return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX)+argosProperties.getProperty(PROPERTY_ARGOS_WARN_TEMPLATE);
+        default:
+            return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX);
         }
-        return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX);        
     }
     
     public static String getArgosValidTemplate() {
