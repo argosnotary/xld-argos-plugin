@@ -5,8 +5,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,24 +62,18 @@ class ArgosConfigurationTest {
     
     @Test
     void testGetArgosServerBaseUrl() {
-        assertThat(ArgosConfiguration.getArgosServerBaseUrl(), is("http://localhost:8080/api"));
+        assertThat(ArgosConfiguration.getArgosServerBaseUrl(), is("http://localhost:8081/api"));
     }
     
     @Test
-    void testGetXldUriForExport() throws URISyntaxException {
-        when(context.getRepository()).thenReturn(repository);
-        when(repository.read(XLD_CLIENT_CONFIG_ID)).thenReturn(xldConf);
-
-        when(xldConf.getUsername()).thenReturn("admin");
-        when(xldConf.getPassword()).thenReturn("admin123"); 
-        
-        assertThat(ArgosConfiguration.getXldUriForExport(context, "foo"), is(new URI("http://admin:admin123@localhost:4516/deployit/internal/download/foo")));
+    void testGetXldUrlForExport() throws URISyntaxException, MalformedURLException {
+        assertThat(ArgosConfiguration.getXldUrlForExport(context, "foo"), is(new URL("http://localhost:4516/deployit/internal/download/foo")));
     }
     
     @Test
     void testGetArgosActionTemplate() {
         assertThat(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.ABORT), is("Package: %s has an invalid Argos Notary Verification"));
-        assertThat(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.WARN), is("Package: %s has an invalid Argos Notary Verification\nThis is a warning"));
+        assertThat(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.WARN), is("Package: %s has an invalid Argos Notary Verification"));
     }
     
     @Test

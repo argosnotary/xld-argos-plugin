@@ -77,11 +77,8 @@ class Argos4jVerifierTest {
         when(version.getApplication()).thenReturn(application);
         when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_SUPPLYCHAIN)).thenReturn(SUPPLYCHAIN);
         when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_PERSONAL_ACCOUNT)).thenReturn(null);
-        when(application.getName()).thenReturn(APPLICATION_NAME);
-        when(context.getRepository()).thenReturn(repository);
-        when(repository.read(VERSION_ID)).thenReturn(version);
-        
-        assertFalse(Argos4jVerifier.versionIsValid(context, VERSION_ID));
+        when(application.getName()).thenReturn(APPLICATION_NAME);     
+        assertFalse(Argos4jVerifier.versionIsValid(context, version));
     }
     
     @Test
@@ -90,10 +87,8 @@ class Argos4jVerifierTest {
         when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_SUPPLYCHAIN)).thenReturn(null);
         when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_PERSONAL_ACCOUNT)).thenReturn(npa);
         when(application.getName()).thenReturn(APPLICATION_NAME);
-        when(context.getRepository()).thenReturn(repository);
-        when(repository.read(VERSION_ID)).thenReturn(version);
         
-        assertFalse(Argos4jVerifier.versionIsValid(context, VERSION_ID));
+        assertFalse(Argos4jVerifier.versionIsValid(context, version));
     }
     
     @Test
@@ -104,12 +99,11 @@ class Argos4jVerifierTest {
         when(npa.getPassphrase()).thenReturn(NPA_PASSPHRASE);
         when(context.getRepository()).thenReturn(repository);
         when(repository.read(XLD_CLIENT_CONFIG_ID)).thenReturn(xldClientConfig);
-        when(repository.read(VERSION_ID)).thenReturn(version);
         when(xldClientConfig.getUsername()).thenReturn(XLD_USERNAME);
         when(xldClientConfig.getPassword()).thenReturn(XLD_PASSWORD);
         
         Throwable exception = assertThrows(Argos4jError.class, () -> {
-            Argos4jVerifier.versionIsValid(context, VERSION_ID);
+            Argos4jVerifier.versionIsValid(context, version);
           });
         assertEquals("Connection refused (Connection refused)", exception.getMessage());
     }
