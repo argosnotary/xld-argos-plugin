@@ -21,8 +21,10 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.rabobank.argos.argos4j.Argos4j;
 import com.rabobank.argos.argos4j.Argos4jError;
@@ -60,14 +62,10 @@ public class Argos4jVerifier {
             context.logError(String.format("Argos Supply Chain not set on Application [%s]", version.getApplication().getName()));
             return false;
         }
-        char[] passphrase = npaAccount.getPassphrase().toCharArray();        
-
-        XldClientConfig xldConf = ArgosConfiguration.getXldClientConfig(context);
+        char[] passphrase = npaAccount.getPassphrase().toCharArray(); 
         
         List<String> path = getPath(supplyChain);
         String supplyChainName = getSupplyChainName(supplyChain);
-        
-        String downloadKey = getVersionDownloadKey(context, xldConf, version.getId());
         
         Argos4jSettings settings = Argos4jSettings.builder()
                 .pathToLabelRoot(path)
@@ -77,36 +75,12 @@ public class Argos4jVerifier {
         Argos4j argos4j = new Argos4j(settings);
         
         VerifyBuilder verifyBuilder = argos4j.getVerifyBuilder();
-        RemoteZipFileCollector darCollect = RemoteZipFileCollector.builder()
-                .url(ArgosConfiguration.getXldUrlForExport(context, downloadKey))
-                .username(xldConf.getUsername())
-                .password(xldConf.getPassword().toCharArray())
-                .build();
         
-        verifyBuilder.addFileCollector(darCollect);
-
-        version.getDeployables().forEach(deployable -> {
-            if (deployable instanceof SourceArtifact) {
-                String uri = ((SourceArtifact) deployable).getFileUri();
-                if (!uri.startsWith("internal:")) {
-                    RemoteFileCollectorBuilder fileCollectorBuilder = null;
-                    try {
-                        fileCollectorBuilder = RemoteFileCollector.builder().url(new URL(uri));
-                    } catch (MalformedURLException e) {
-                        context.logError(String.format("Exception during Argos Notary verify: [%s]", e.getMessage()));
-                    }
-                    Optional<Credentials> credentials = Optional
-                            .ofNullable(((SourceArtifact) deployable).getCredentials());
-                    if (credentials.isPresent()) {
-                        fileCollectorBuilder
-                            .username(((UsernamePasswordCredentials) credentials.get()).getUsername())
-                            .password(((UsernamePasswordCredentials) credentials.get()).getPassword().toCharArray());
-                    }
-                    verifyBuilder.addFileCollector(fileCollectorBuilder.build());
-
-                }
-            }
-        });
+        verifyBuilder.addFileCollector(getDarCollector(context, version));
+        
+        Set<FileCollector> fileCollectors = getRemoteFileCollectors(context, version);
+        
+        fileCollectors.forEach(verifyBuilder::addFileCollector);
         
         VerificationResult verifyResult = null;
         try {
@@ -124,8 +98,46 @@ public class Argos4jVerifier {
         }
     }
     
-    private static String getVersionDownloadKey(ExecutionContext context, XldClientConfig xldConf, String versionId) {
-        String keyUrl = ArgosConfiguration.getXldUrlForDownloadKey(context, versionId);
+    private static RemoteZipFileCollector getDarCollector(ExecutionContext context, Version version) {
+        XldClientConfig xldConf = ArgosConfiguration.getXldClientConfig(context);
+        String downloadKey = getVersionDownloadKey(xldConf, version.getId());
+        return RemoteZipFileCollector.builder()
+                .url(ArgosConfiguration.getXldUrlForExport(downloadKey))
+                .username(xldConf.getUsername()).password(xldConf.getPassword().toCharArray())
+                .build();
+
+    }
+    
+    private static Set<FileCollector> getRemoteFileCollectors(ExecutionContext context, Version version) {
+        Set<FileCollector> fileCollectors = new HashSet<>();
+        version.getDeployables().forEach(deployable -> {
+            if (deployable instanceof SourceArtifact) {
+                String uri = ((SourceArtifact) deployable).getFileUri();
+                if (!uri.startsWith("internal:")) {
+                    RemoteFileCollectorBuilder fileCollectorBuilder = null;
+                    try {
+                        fileCollectorBuilder = RemoteFileCollector.builder().url(new URL(uri));
+                    } catch (MalformedURLException e) {
+                        context.logError(String.format("Exception during Argos Notary verify: [%s]", e.getMessage()));
+                    }
+                    Optional<Credentials> credentials = Optional
+                            .ofNullable(((SourceArtifact) deployable).getCredentials());
+                    if (credentials.isPresent()) {
+                        fileCollectorBuilder
+                            .username(((UsernamePasswordCredentials) credentials.get()).getUsername())
+                            .password(((UsernamePasswordCredentials) credentials.get()).getPassword().toCharArray());
+                    }
+                    fileCollectors.add(fileCollectorBuilder.build());
+    
+                }
+            }
+        });
+        return fileCollectors;
+
+    }
+    
+    private static String getVersionDownloadKey(XldClientConfig xldConf, String versionId) {
+        String keyUrl = ArgosConfiguration.getXldUrlForDownloadKey(versionId);
         RequestTemplate requestTemplate = new RequestTemplate();
         requestTemplate.method(Request.HttpMethod.GET);
         requestTemplate.target(keyUrl);

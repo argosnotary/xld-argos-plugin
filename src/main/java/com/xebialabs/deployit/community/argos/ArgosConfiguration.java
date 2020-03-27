@@ -98,11 +98,11 @@ public class ArgosConfiguration {
         return argosProperties.getProperty(PROPERTY_ARGOS_SERVICE_BASE_URL); 
     }
     
-    public static String getXldUrlForDownloadKey(ExecutionContext context, String fragment) {
+    public static String getXldUrlForDownloadKey(String fragment) {
         return String.format(KEY_URI, argosProperties.getProperty(PROPERTY_XLD_BASE_URL), fragment);
     }
     
-    public static URL getXldUrlForExport(ExecutionContext context, String key) {
+    public static URL getXldUrlForExport(String key) {
         String url = String.format(EXPORT_URI, argosProperties.getProperty(PROPERTY_XLD_BASE_URL), key);
         try {
             return new URL(url);

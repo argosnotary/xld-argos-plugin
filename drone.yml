@@ -1,0 +1,44 @@
+---
+kind: pipeline
+type: docker
+name: argosbuild
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: build xlpd
+  image: gradle:6.2-jdk8
+  commands:
+  - gradle xlPlugin uploadArchives 
+  environment:
+      ORG_GRADLE_PROJECT_ossrhLoginUser:
+        from_secret: ossrh_login_user
+      ORG_GRADLE_PROJECT_ossrhLoginPassword:
+        from_secret: ossrh_login_password
+      ORG_GRADLE_PROJECT_signingPassword:
+        from_secret: signing_password
+      ORG_GRADLE_PROJECT_signingKey:
+        from_secret: signing_key
+    
+- name: build argos xldeploy image
+  image: plugins/docker
+  settings:
+    context: .
+    repo: argosnotary/argos-xldeploy
+    tags:
+    - 0.0.1-RC3-SNAPSHOT
+    - latest
+    password:
+      from_secret: docker_login_token
+    username:
+      from_secret: docker_login_user
+  depends_on:
+  - build xlpd
+
+trigger:
+  event:
+  - push
+  - tag
+...
