@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: docker
-name: argosbuild
+name: xldeploy argos build
 
 platform:
   os: linux
