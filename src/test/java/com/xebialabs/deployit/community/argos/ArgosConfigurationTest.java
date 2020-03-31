@@ -2,11 +2,9 @@ package com.xebialabs.deployit.community.argos;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -21,21 +19,10 @@ import com.xebialabs.deployit.community.argos.model.ArgosVerificationStatus;
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.services.Repository;
+import com.xebialabs.deployit.plugin.api.udm.Environment;
 
 @ExtendWith(MockitoExtension.class)
 class ArgosConfigurationTest {
-    
-    private String APPLICATION_NAME = "Applications/aaa/argos-tes-app";
-    private String VERSION_NAME = "1.0";
-    private String SUPPLYCHAIN_KEY = "argosSupplyChain";
-    private String SUPPLYCHAIN = "root_label.child_label:argos-test-app";
-    private String NPA_KEY = "argosNonPersonalAccount";
-    private String NPA_ID = "BLA";
-    private String NPA_KEY_ID = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
-    private String NPA_PASSPHRASE = "bar";
-    private String XLD_CLIENT_CONFIG_ID = "Configuration/config/administration/argos/xldconfig";
-    private String XLD_USERNAME = "xldUsername";
-    private String XLD_PASSWORD = "xldPassword";
     
     @Mock
     XldClientConfig xldConf;
@@ -45,6 +32,9 @@ class ArgosConfigurationTest {
     
     @Mock
     ExecutionContext context;
+    
+    @Mock
+    Environment environment;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -52,28 +42,40 @@ class ArgosConfigurationTest {
 
     @Test
     void testGetActionOnInvalid() {
-        assertThat(ArgosConfiguration.getActionOnInvalid(), is(ActionOnInvalid.NONE));
+        when(environment.hasProperty("actionOnInvalid")).thenReturn(false);
+        assertThat(ArgosConfiguration.getActionOnInvalid(environment), is(ActionOnInvalid.WARN));
+        when(environment.hasProperty("actionOnInvalid")).thenReturn(true);
+        when(environment.getProperty(ArgosConfiguration.ENV_PROPERTY_ACTION_ON_INVALID)).thenReturn(ActionOnInvalid.NONE);
+        assertThat(ArgosConfiguration.getActionOnInvalid(environment), is(ActionOnInvalid.WARN));
+        when(environment.getProperty(ArgosConfiguration.ENV_PROPERTY_ACTION_ON_INVALID)).thenReturn(ActionOnInvalid.WARN);
+        assertThat(ArgosConfiguration.getActionOnInvalid(environment), is(ActionOnInvalid.WARN));
+        when(environment.getProperty(ArgosConfiguration.ENV_PROPERTY_ACTION_ON_INVALID)).thenReturn(ActionOnInvalid.ABORT);
+        assertThat(ArgosConfiguration.getActionOnInvalid(environment), is(ActionOnInvalid.ABORT));
     }
 
     @Test
-    void testGetArgosVerificationStatus() {
-        assertThat(ArgosConfiguration.getArgosVerificationStatus(), is(ArgosVerificationStatus.DISABLED));
+    void testIsEnabled() {
+        when(environment.hasProperty("verifyWithArgos")).thenReturn(false);
+        assertThat(ArgosConfiguration.isEnabled(environment), is(false));
+        when(environment.hasProperty("verifyWithArgos")).thenReturn(true);
+        when(environment.getProperty(ArgosConfiguration.PROPERTY_VERIFY_WITH_ARGOS)).thenReturn(ArgosVerificationStatus.ENABLED);
+        assertThat(ArgosConfiguration.isEnabled(environment), is(true));
     }
     
     @Test
     void testGetArgosServerBaseUrl() {
-        assertThat(ArgosConfiguration.getArgosServerBaseUrl(), is("http://localhost:8081/api"));
+        assertThat(ArgosConfiguration.getArgosServerBaseUrl(), is("http://argos-service:8080/api"));
     }
     
     @Test
     void testGetXldUrlForExport() throws URISyntaxException, MalformedURLException {
-        assertThat(ArgosConfiguration.getXldUrlForExport(context, "foo"), is(new URL("http://localhost:4516/deployit/internal/download/foo")));
+        assertThat(ArgosConfiguration.getXldUrlForExport("foo"), is(new URL("http://localhost:4516/deployit/internal/download/foo")));
     }
     
     @Test
     void testGetArgosActionTemplate() {
-        assertThat(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.ABORT), is("Package: %s has an invalid Argos Notary Verification"));
-        assertThat(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.WARN), is("Package: %s has an invalid Argos Notary Verification"));
+        assertThat(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.ABORT), is("Package: %s has an invalid Argos Notary Verification, abort"));
+        assertThat(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.WARN), is("Package: %s has an invalid Argos Notary Verification, this is a warning"));
     }
     
     @Test

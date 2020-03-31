@@ -24,9 +24,11 @@ import com.xebialabs.deployit.plugin.api.udm.Version;
 public class ArgosVerificationStep implements Step {
     
     private Version version;
+    private ActionOnInvalid action;
 
-    public ArgosVerificationStep(Version version) {
+    public ArgosVerificationStep(Version version, ActionOnInvalid action) {
         this.version = version;
+        this.action = action;
     }
     
     @Override
@@ -40,12 +42,19 @@ public class ArgosVerificationStep implements Step {
     }
     
     private StepExitCode handleFail(ExecutionContext context) {
-        if (ActionOnInvalid.ABORT.equals(ArgosConfiguration.getActionOnInvalid())) {
-            context.logError(String.format(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.ABORT), version.getName()));
-            return StepExitCode.FAIL;
-        } else {
-            context.logError(String.format(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.WARN), version.getName()));
-            return StepExitCode.SUCCESS;
+        switch (action) {
+            case ABORT: 
+                context.logError(String.format(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.ABORT), version.getName()));
+                return StepExitCode.FAIL;
+            case WARN:
+                context.logError(String.format(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.WARN), version.getName()));
+                return StepExitCode.SUCCESS;
+            case NONE:
+                context.logError(String.format(ArgosConfiguration.getArgosActionTemplate(ActionOnInvalid.NONE), version.getName()));
+                return StepExitCode.SUCCESS;
+            default:
+                context.logError(String.format("Unknown action: %s", action));
+                return StepExitCode.FAIL;
         }
     }
 

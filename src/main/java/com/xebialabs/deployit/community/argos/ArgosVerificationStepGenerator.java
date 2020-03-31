@@ -18,7 +18,6 @@ package com.xebialabs.deployit.community.argos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.xebialabs.deployit.community.argos.model.ArgosVerificationStatus;
 import com.xebialabs.deployit.plugin.api.deployment.planning.Contributor;
 import com.xebialabs.deployit.plugin.api.deployment.planning.DeploymentPlanningContext;
 import com.xebialabs.deployit.plugin.api.deployment.specification.Delta;
@@ -38,16 +37,10 @@ public class ArgosVerificationStepGenerator {
         if (noVerifyOperations) {
             logger.info("no verification");
         } else {
-            if (enabled(environment)) {
-                context.addStep(new ArgosVerificationStep(context.getDeployedApplication().getVersion()));
+            if (ArgosConfiguration.isEnabled(environment)) {
+                context.addStep(new ArgosVerificationStep(context.getDeployedApplication().getVersion(),
+                        ArgosConfiguration.getActionOnInvalid(environment)));
             }
         }
     }
-
-    private static boolean enabled(final Environment environment) {
-        return ArgosVerificationStatus.ENABLED.equals(ArgosConfiguration.getArgosVerificationStatus()) || 
-                (environment.hasProperty(ArgosConfiguration.PROPERTY_VERIFY_WITH_ARGOS) 
-                        && ArgosVerificationStatus.ENABLED.equals(environment.<ArgosVerificationStatus>getProperty(ArgosConfiguration.PROPERTY_VERIFY_WITH_ARGOS)));
-    }
-
 }

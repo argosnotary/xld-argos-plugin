@@ -19,12 +19,18 @@ version: '3.1'
 services:
 
   xldeploy:
-    build:
-      context: .
+    image: xebialabs/xl-deploy:9.5-debian-slim
     environment:
       ADMIN_PASSWORD: admin
       ACCEPT_EULA: Y
+    volumes:
+      - ./docker/argos.properties:/opt/xebialabs/xl-deploy-server/config/argos.properties
+      - ./build/distributions/xld-argos-plugin-0.0.1-RC3-SNAPSHOT.xldp:/opt/xebialabs/xl-deploy-server/plugins/xld-argos-plugin-0.0.1-RC3-SNAPSHOT.xldp
     ports:
       - 4516:4516
       
-      
+  tomcat:
+    image: argosnotary/xld-tomcat-target:9.0
+    ports:
+     - "2022:22"
+     - "8082:8080"

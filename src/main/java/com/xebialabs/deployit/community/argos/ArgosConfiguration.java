@@ -32,6 +32,7 @@ import com.xebialabs.deployit.community.argos.model.ArgosVerificationStatus;
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;
 import com.xebialabs.deployit.plugin.api.deployment.specification.Operation;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
+import com.xebialabs.deployit.plugin.api.udm.Environment;
 
 public class ArgosConfiguration {
     
@@ -40,6 +41,7 @@ public class ArgosConfiguration {
     
     public static final String PROPERTY_ARGOS_PERSONAL_ACCOUNT = "argosNonPersonalAccount";
     public static final String PROPERTY_VERIFY_WITH_ARGOS = "verifyWithArgos";
+    public static final String ENV_PROPERTY_ACTION_ON_INVALID = "actionOnInvalid";
     public static final String PROPERTY_ARGOS_SUPPLYCHAIN = "argosSupplyChain";
     public static final String PROPERTY_ACTION_ON_INVALID = "argos.action.on.invalid";
     public static final String PROPERTY_VERIFICATION_STATUS = "argos.verification.status";
@@ -48,6 +50,7 @@ public class ArgosConfiguration {
     public static final String PROPERTY_XLD_CLIENT_CONF_ID = "argos.xld.client.conf.id";
     public static final String PROPERTY_ARGOS_ABORT_TEMPLATE = "argos.abort.template";
     public static final String PROPERTY_ARGOS_WARN_TEMPLATE = "argos.warn.template";
+    public static final String PROPERTY_ARGOS_NONE_TEMPLATE = "argos.none.template";
     public static final String PROPERTY_ARGOS_VALID_TEMPLATE = "argos.valid.template";
     public static final String PROPERTY_ARGOS_RESULT_PREFIX = "argos.result.prefix";
     
@@ -86,11 +89,33 @@ public class ArgosConfiguration {
         return properties;
     }
 
-    public static ActionOnInvalid getActionOnInvalid() {
-        return ActionOnInvalid.valueOf(argosProperties.getProperty(PROPERTY_ACTION_ON_INVALID));
+    public static ActionOnInvalid getActionOnInvalid(Environment environment) {
+        ActionOnInvalid globalAction = ActionOnInvalid.valueOf(argosProperties.getProperty(PROPERTY_ACTION_ON_INVALID));
+        ActionOnInvalid envAction = null;
+        if (environment.hasProperty(ENV_PROPERTY_ACTION_ON_INVALID)) {
+            envAction = environment.getProperty(ENV_PROPERTY_ACTION_ON_INVALID);
+        }
+        if (envAction != null && envAction.ordinal() > globalAction.ordinal()) {
+            return envAction;
+        } else {
+            return globalAction;
+        }
     }
 
-    public static ArgosVerificationStatus getArgosVerificationStatus() {
+    public static boolean isEnabled(final Environment environment) {
+        ArgosVerificationStatus globalStatus = ArgosConfiguration.getArgosVerificationStatus();
+        ArgosVerificationStatus envStatus = null;
+        if (environment.hasProperty(PROPERTY_VERIFY_WITH_ARGOS)) {
+            envStatus = environment.getProperty(PROPERTY_VERIFY_WITH_ARGOS);
+        }
+        if (envStatus != null && envStatus.ordinal() > globalStatus.ordinal()) {
+            return envStatus.equals(ArgosVerificationStatus.ENABLED);
+        } else {
+            return globalStatus.equals(ArgosVerificationStatus.ENABLED);
+        }
+    }
+    
+    private static ArgosVerificationStatus getArgosVerificationStatus() {
         return ArgosVerificationStatus.valueOf(argosProperties.getProperty(PROPERTY_VERIFICATION_STATUS));
     }
     
@@ -102,8 +127,8 @@ public class ArgosConfiguration {
         return String.format(KEY_URI, argosProperties.getProperty(PROPERTY_XLD_BASE_URL), fragment);
     }
     
-    public static URL getXldUrlForExport(String key) {
-        String url = String.format(EXPORT_URI, argosProperties.getProperty(PROPERTY_XLD_BASE_URL), key);
+    public static URL getXldUrlForExport(String downLoadKey) {
+        String url = String.format(EXPORT_URI, argosProperties.getProperty(PROPERTY_XLD_BASE_URL), downLoadKey);
         try {
             return new URL(url);
         } catch (MalformedURLException e) {        
@@ -121,6 +146,8 @@ public class ArgosConfiguration {
             return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX)+argosProperties.getProperty(PROPERTY_ARGOS_ABORT_TEMPLATE);
         case WARN:
             return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX)+argosProperties.getProperty(PROPERTY_ARGOS_WARN_TEMPLATE);
+        case NONE:
+            return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX)+argosProperties.getProperty(PROPERTY_ARGOS_NONE_TEMPLATE);
         default:
             return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX);
         }
