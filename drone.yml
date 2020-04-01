@@ -28,7 +28,7 @@ steps:
     context: .
     repo: argosnotary/argos-xldeploy
     tags:
-    - 0.0.1-RC3-SNAPSHOT
+    - 0.0.1-RC4
     - latest
     password:
       from_secret: docker_login_token
