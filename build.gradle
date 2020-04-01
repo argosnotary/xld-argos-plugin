@@ -3,9 +3,15 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id "com.github.hierynomus.license" version "0.15.0"
     id "com.xebialabs.xldp" version "1.0.5"
+    id 'maven-publish'
+    id 'signing'
 }
 
-version="0.0.1-RC3"
+version="0.0.1-RC3-SNAPSHOT"
+
+group = "com.rabobank.argos"
+archivesBaseName = "xld-argos-plugin"
+version = "0.0.1-RC3-SNAPSHOT"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -15,8 +21,10 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
+apply plugin: 'signing'
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         url 'https://dist.xebialabs.com/public/maven2'
@@ -25,6 +33,38 @@ repositories {
 
 dependencies {
     compile "com.xebialabs.deployit:udm-plugin-api:$apiVersion"
+    compile "com.xebialabs.deployit:engine-api:$apiVersion"
+    compile "com.rabobank.argos:argos4j:0.0.1-RC3"
+    
+    testCompile "org.junit.jupiter:junit-jupiter:5.6.1"
+    testCompile "org.hamcrest:hamcrest-library:2.1"
+    testCompile "org.junit.jupiter:junit-jupiter-params:5.6.1"
+    
+    compile "org.projectlombok:lombok:1.18.12"
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    
+    testCompile "org.mockito:mockito-junit-jupiter:3.1.0"
+    
+    distBundle "com.rabobank.argos:argos4j:0.0.1-RC3"
+    
+}
+
+signing {
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    
+    sign configurations.archives
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
 processResources.configure {
@@ -40,5 +80,48 @@ license {
     strictCheck true
 }
 
+uploadArchives {
+  def ossrhLoginUser = findProperty("ossrhLoginUser")
+  def ossrhLoginPassword = findProperty("ossrhLoginPassword")
 
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhLoginUser, password: ossrhLoginPassword)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhLoginUser, password: ossrhLoginPassword)
+      }
+
+      pom.project {
+        name 'XLDeploy Argos plugin'
+        packaging 'xldp'
+
+        scm {
+          connection 'scm:git:https://github.com/rabobank/argos.git'
+          developerConnection 'scm:git:https://github.com/rabobank/argos.git'
+          url 'https://github.com/rabobank/argos/tree/master'
+        }
+
+        licenses {
+          license {
+            name 'The Apache License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+
+        developers {
+          developer {
+            id 'borstg'
+            name 'Gerard Borst'
+            email 'gerard.borst@rabobank.nl'
+          }
+        }
+      }
+    }
+  }
+}
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2019 - 2020 Rabobank Nederland
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@Prefix(value="argos")
 package com.xebialabs.deployit.community.argos;
 
-import com.xebialabs.deployit.plugin.api.udm.Prefix;
+public class ArgosError extends RuntimeException {
+
+
+    public ArgosError(String message) {
+        super(message);
+    }
+
+    public ArgosError(String message, Throwable e) {
+        super(message, e);
+    }
+}
