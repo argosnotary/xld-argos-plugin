@@ -11,7 +11,7 @@ steps:
 - name: build xlpd
   image: gradle:6.2-jdk8
   commands:
-  - gradle xlPlugin uploadArchives 
+  - gradle test xlPlugin uploadArchives 
   environment:
       ORG_GRADLE_PROJECT_ossrhLoginUser:
         from_secret: ossrh_login_user

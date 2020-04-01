@@ -18,13 +18,12 @@ package com.xebialabs.deployit.community.argos;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import com.rabobank.argos.argos4j.Argos4j;
 import com.rabobank.argos.argos4j.Argos4jError;
@@ -49,7 +48,7 @@ import feign.RequestTemplate;
 import feign.Response;
 import feign.auth.BasicAuthRequestInterceptor;
 
-public class Argos4jVerifier {
+public class ArgosVerifier {
 
     public static boolean versionIsValid(ExecutionContext context, Version version) {
         String supplyChain = version.getApplication().getProperty(ArgosConfiguration.PROPERTY_ARGOS_SUPPLYCHAIN);
@@ -78,7 +77,7 @@ public class Argos4jVerifier {
         
         verifyBuilder.addFileCollector(getDarCollector(context, version));
         
-        Set<FileCollector> fileCollectors = getRemoteFileCollectors(context, version);
+        List<FileCollector> fileCollectors = getRemoteFileCollectors(context, version);
         
         fileCollectors.forEach(verifyBuilder::addFileCollector);
         
@@ -108,8 +107,8 @@ public class Argos4jVerifier {
 
     }
     
-    private static Set<FileCollector> getRemoteFileCollectors(ExecutionContext context, Version version) {
-        Set<FileCollector> fileCollectors = new HashSet<>();
+    private static List<FileCollector> getRemoteFileCollectors(ExecutionContext context, Version version) {
+        List<FileCollector> fileCollectors = new ArrayList<>();
         version.getDeployables().forEach(deployable -> {
             if (deployable instanceof SourceArtifact) {
                 String uri = ((SourceArtifact) deployable).getFileUri();

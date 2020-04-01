@@ -72,7 +72,7 @@ public class ArgosConfiguration {
             logger.warn("loading default properties.");
             properties.load(ArgosConfiguration.class.getResourceAsStream("/default.properties"));
         } catch (IOException e) {
-            logger.info("{}", e.getMessage());
+            throw new ArgosError(String.format("Loading default.properties: %s", e.getMessage()));
         }
         
         try (InputStream input = ArgosConfiguration.class.getClassLoader().getResourceAsStream("argos.properties")) {
@@ -80,11 +80,9 @@ public class ArgosConfiguration {
                 logger.warn("argos.properties file not in config directory, defaults are used.");
                 return properties;
             }
-            
-          //load a properties file from class path, inside static method
             properties.load(input);
         } catch (IOException e) {
-            logger.info("{}", e.getMessage());
+            throw new ArgosError(String.format("Loading argos.properties: %s", e.getMessage()));
         }
         return properties;
     }

@@ -33,7 +33,7 @@ public class ArgosVerificationStep implements Step {
     
     @Override
     public StepExitCode execute(ExecutionContext context) throws Exception {
-        if (Argos4jVerifier.versionIsValid(context, version)) {
+        if (ArgosVerifier.versionIsValid(context, version)) {
             context.logOutput(String.format(ArgosConfiguration.getArgosValidTemplate(), version.getName()));
             return StepExitCode.SUCCESS;
         } else {
