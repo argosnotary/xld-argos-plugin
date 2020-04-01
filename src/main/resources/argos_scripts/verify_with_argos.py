@@ -20,13 +20,13 @@ Created on Oct 19, 2018
 @author: borstg
 '''
 import com.xebialabs.deployit.community.argos.ArgosConfiguration as ArgosConfiguration
-import com.xebialabs.deployit.community.argos.Argos4jVerifier as Argos4jVerifier
+import com.xebialabs.deployit.community.argos.ArgosVerifier as ArgosVerifier
 
 global params, thisCi, context, permissionService, metadataService, repositoryService
 
 version = context.getRepository().read(thisCi.id);
 
-if Argos4jVerifier.versionIsValid(context, version):
+if ArgosVerifier.versionIsValid(context, version):
     context.logOutput("This package has a valid Argos Notary Verification")
 else:
     context.logError("This package has an invalid Argos Notary Verification")
