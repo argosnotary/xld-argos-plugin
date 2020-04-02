@@ -15,7 +15,7 @@ version = "0.0.1-RC4"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-def apiVersion = '2019.3.4'
+def apiVersion = '20140530.0'
 
 apply plugin: 'java'
 apply plugin: 'idea'
