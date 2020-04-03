@@ -49,6 +49,8 @@ import feign.Response;
 import feign.auth.BasicAuthRequestInterceptor;
 
 public class ArgosVerifier {
+    
+    private ArgosVerifier() {}
 
     public static boolean versionIsValid(ExecutionContext context, Version version) {
         String supplyChain = version.getApplication().getProperty(ArgosConfiguration.PROPERTY_ARGOS_SUPPLYCHAIN);

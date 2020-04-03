@@ -36,7 +36,7 @@ import com.xebialabs.deployit.plugin.api.udm.Environment;
 
 public class ArgosConfiguration {
     
-    public static final List<Operation> OPERATIONS_WITHOUT_VERIFICATION = 
+    protected static final List<Operation> OPERATIONS_WITHOUT_VERIFICATION = 
             Arrays.asList(Operation.NOOP, Operation.DESTROY);
     
     public static final String PROPERTY_ARGOS_PERSONAL_ACCOUNT = "argosNonPersonalAccount";
@@ -63,8 +63,7 @@ public class ArgosConfiguration {
     
     protected static String xldUriTemplate;
 
-    private ArgosConfiguration() {
-    }
+    private ArgosConfiguration() {}
 
     private static Properties getProperties() {
         Properties properties = new Properties();

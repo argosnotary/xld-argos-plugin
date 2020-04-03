@@ -3,11 +3,11 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id "com.github.hierynomus.license" version "0.15.0"
     id "com.xebialabs.xldp" version "1.0.5"
+    id 'jacoco'
+    id "org.sonarqube" version "2.7"
     id 'maven-publish'
     id 'signing'
 }
-
-version="0.0.1-RC3-SNAPSHOT"
 
 group = "com.rabobank.argos"
 archivesBaseName = "xld-argos-plugin"
@@ -49,29 +49,47 @@ dependencies {
     
 }
 
+processResources.configure {
+  filter ReplaceTokens, tokens: [
+    'project.version': version.toString(),
+    'project.name': rootProject.name
+  ]
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports"
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        csv.enabled = true
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
 signing {
     def signingKey = findProperty("signingKey")
     def signingPassword = findProperty("signingPassword")
     useInMemoryPgpKeys(signingKey, signingPassword)
     
     sign configurations.archives
-}
-
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-processResources.configure {
-  filter ReplaceTokens, tokens: [
-    'project.version': version.toString(),
-    'project.name': rootProject.name
-  ]
 }
 
 license {
@@ -99,11 +117,14 @@ uploadArchives {
       pom.project {
         name 'XLDeploy Argos plugin'
         packaging 'xldp'
+        
+        description 'A plugin used in XLDeploy to communicate with an Argos Service.'
+        url 'https://github.com/argosnotary/argos/tree/master'
 
         scm {
-          connection 'scm:git:https://github.com/rabobank/argos.git'
-          developerConnection 'scm:git:https://github.com/rabobank/argos.git'
-          url 'https://github.com/rabobank/argos/tree/master'
+          connection 'scm:git:https://github.com/argosnotary/xld-argos-plugin.git'
+          developerConnection 'scm:git:https://github.com/argosnotary/xld-argos-plugin.git'
+          url 'https://github.com/argosnotary/argos/tree/master'
         }
 
         licenses {

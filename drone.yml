@@ -11,16 +11,18 @@ steps:
 - name: build xlpd
   image: gradle:6.2-jdk8
   commands:
-  - gradle test xlPlugin uploadArchives 
+  - gradle test jacocoTestReport xlPlugin javadocJar sourcesJar uploadArchives sonarqube -Dorg.gradle.daemon=false -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_LOGIN -Dsonar.projectKey=xld-argos-plugin -Dsonar.organization=argosnotary
   environment:
-      ORG_GRADLE_PROJECT_ossrhLoginUser:
-        from_secret: ossrh_login_user
-      ORG_GRADLE_PROJECT_ossrhLoginPassword:
-        from_secret: ossrh_login_password
-      ORG_GRADLE_PROJECT_signingPassword:
-        from_secret: signing_password
-      ORG_GRADLE_PROJECT_signingKey:
+    ORG_GRADLE_PROJECT_ossrhLoginUser:
+      from_secret: ossrh_login_user
+    ORG_GRADLE_PROJECT_ossrhLoginPassword:
+      from_secret: ossrh_login_password
+    ORG_GRADLE_PROJECT_signingPassword:
+      from_secret: signing_password
+    ORG_GRADLE_PROJECT_signingKey:
         from_secret: signing_key
+    SONAR_LOGIN:
+      from_secret: sonar_login
     
 - name: build argos xldeploy image
   image: plugins/docker

@@ -20,9 +20,12 @@ import com.xebialabs.deployit.plugin.api.udm.Property;
 import com.xebialabs.deployit.plugin.api.udm.TypeIcon;
 import com.xebialabs.deployit.plugin.api.udm.base.BaseConfigurationItem;
 
+import lombok.EqualsAndHashCode;
+
 @SuppressWarnings("serial")
 @Metadata(root = Metadata.ConfigurationItemRoot.CONFIGURATION, description = "Server Configuration for REST api")
 @TypeIcon(value="icons/types/xld.svg")
+@EqualsAndHashCode(callSuper=false)
 public class XldClientConfig extends BaseConfigurationItem {
 
     @Property(required = true)
