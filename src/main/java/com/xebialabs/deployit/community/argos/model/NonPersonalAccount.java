@@ -20,6 +20,7 @@ import com.xebialabs.deployit.plugin.api.udm.Property;
 import com.xebialabs.deployit.plugin.api.udm.TypeIcon;
 import com.xebialabs.deployit.plugin.api.udm.base.BaseConfigurationItem;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +28,7 @@ import lombok.Setter;
 @TypeIcon(value="icons/types/argos.NonPersonalAccount.svg")
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper=false)
 public class NonPersonalAccount extends BaseConfigurationItem {
 
     @Property(required = true, label = "Key identifier of the Non Personal Account on the Argos Service")
