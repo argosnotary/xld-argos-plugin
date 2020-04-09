@@ -59,7 +59,7 @@ The following properties can be set in the `argos.properties` file.
 
 #### Define NPA.
 
-For the verification of the Deployment Package an an **Argos Service** account is needed. The account should be created on the same pranch as the `SupplyChain`. During this creation a `keyid` and a `passphrase` are presented, these are needed for the configuration in XLDeploy.
+For the verification of the Deployment Package an an **Argos Service** account is needed. The account should be created on the same branch as the `SupplyChain`. During this creation a `keyid` and a `passphrase` are presented, these are needed for the configuration in XLDeploy.
 
 Choose in the `Environments` branch in XLDeploy for `New` > `argos` > `NonPersonalAccount`
 
