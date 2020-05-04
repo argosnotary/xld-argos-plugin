@@ -9,7 +9,7 @@ platform:
 
 steps:
 - name: build xlpd
-  image: gradle:6.2-jdk8
+  image: gradle:6.3-jdk8
   commands:
   - gradle test jacocoTestReport xlPlugin javadocJar sourcesJar uploadArchives sonarqube -Dorg.gradle.daemon=false -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_LOGIN -Dsonar.projectKey=xld-argos-plugin -Dsonar.organization=argosnotary
   environment:
@@ -23,21 +23,36 @@ steps:
         from_secret: signing_key
     SONAR_LOGIN:
       from_secret: sonar_login
-    
+      
 - name: build argos xldeploy image
   image: plugins/docker
   settings:
     context: .
+    repo: argosnotary/argos-xldeploy-snapshot
+    tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
+    username:
+      from_secret: docker_login_user
+    password:
+      from_secret: docker_login_token
+  depends_on:
+  - build xlpd
+    
+- name: release argos xldeploy image
+  image: plugins/docker
+  settings:
+    context: .
     repo: argosnotary/argos-xldeploy
-    tags:
-    - 0.0.1-RC5-SNAPSHOT
-    - latest
+    auto_tag: true
     password:
       from_secret: docker_login_token
     username:
       from_secret: docker_login_user
   depends_on:
   - build xlpd
+  - build argos xldeploy image
+  when:
+    event:
+    - tag  
 
 trigger:
   event:

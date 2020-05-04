@@ -1,0 +1,61 @@
+package com.xebialabs.deployit.community.argos;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import com.rabobank.argos.argos4j.Argos4j;
+import com.rabobank.argos.argos4j.Argos4jSettings;
+import com.xebialabs.deployit.community.argos.model.NonPersonalAccount;
+import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
+import com.xebialabs.deployit.plugin.api.udm.Version;
+
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@EqualsAndHashCode
+@RequiredArgsConstructor
+public class ArgosXldClientSettings {
+	
+	private final Argos4j argos4j;
+    private final char[] passphrase;
+    
+    @Builder
+    public ArgosXldClientSettings(ExecutionContext context, Version version) {
+    	String supplyChain = version.getApplication().getProperty(ArgosConfiguration.PROPERTY_ARGOS_SUPPLYCHAIN);
+        NonPersonalAccount npaAccount = version.getApplication().getProperty(ArgosConfiguration.PROPERTY_ARGOS_PERSONAL_ACCOUNT);
+        if (npaAccount == null) {
+            context.logError(String.format("Argos NPA not set on Application [%s]", version.getApplication().getName()));
+            throw new ArgosError("Argos NPA not set on Application");
+        }
+        if (supplyChain == null) {
+            context.logError(String.format("Argos Supply Chain not set on Application [%s]", version.getApplication().getName()));
+            throw new ArgosError("Argos Supply Chain not set on Application");
+        }
+        passphrase = npaAccount.getPassphrase().toCharArray();
+        
+        List<String> path = getPath(supplyChain);
+        String supplyChainName = getSupplyChainName(supplyChain);
+        
+        Argos4jSettings settings = Argos4jSettings.builder()
+                .pathToLabelRoot(path)
+                .supplyChainName(supplyChainName)
+                .signingKeyId(npaAccount.getKeyId())
+                .argosServerBaseUrl(ArgosConfiguration.getArgosServerBaseUrl()).build();
+        argos4j = new Argos4j(settings);
+    }
+    
+    private static String getSupplyChainName(String supplyChain) {
+        return supplyChain.split(":")[1];
+    }
+
+    private static List<String> getPath(String supplyChain) {
+        List<String> labelList = Arrays.asList(supplyChain.split(":")[0].split("\\."));
+        Collections.reverse(labelList);
+        return labelList;
+    }
+
+}
