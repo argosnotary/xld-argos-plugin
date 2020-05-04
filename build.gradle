@@ -11,7 +11,7 @@ plugins {
 
 group = "com.rabobank.argos"
 archivesBaseName = "xld-argos-plugin"
-version = "0.0.1-RC5-SNAPSHOT"
+version = "0.0.1-RC6-SNAPSHOT"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
