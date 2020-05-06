@@ -21,14 +21,10 @@ import com.xebialabs.deployit.plugin.api.udm.Version;
 @ExtendWith(MockitoExtension.class)
 class ArgosXldClientSettingsTest {
     
-    private String APPLICATION_NAME = "Applications/aaa/argos-tes-app";
     private String SUPPLYCHAIN = "root_label.child_label:argos-test-app";
     private String NPA_PASSPHRASE = "bar";
     private String NPA_KEY_ID = "key_id";
-    private String XLD_CLIENT_CONFIG_ID = "Configuration/config/administration/argos/xldconfig";
-    private String XLD_USERNAME = "xldUsername";
-    private String XLD_PASSWORD = "xldPassword";
-	
+    
 	@Mock
 	Version version;
 	
@@ -54,6 +50,8 @@ class ArgosXldClientSettingsTest {
                 .signingKeyId(NPA_KEY_ID)
                 .argosServerBaseUrl(ArgosConfiguration.getArgosServerBaseUrl()).build();
 		expectedSettings = new ArgosXldClientSettings(new Argos4j(settings), NPA_PASSPHRASE.toCharArray());
+		
+		
 	}
 
 	@Test
@@ -77,7 +75,6 @@ class ArgosXldClientSettingsTest {
         when(npaAccount.getPassphrase()).thenReturn(NPA_PASSPHRASE);
         when(npaAccount.getKeyId()).thenReturn(NPA_KEY_ID);
         ArgosXldClientSettings settings = new ArgosXldClientSettings(context, version);
-        boolean eq = expectedSettings.equals(settings);
         
         assertEquals(expectedSettings, settings);
         

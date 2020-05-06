@@ -16,6 +16,8 @@ import com.xebialabs.deployit.plugin.api.flow.StepExitCode;
 
 public class ArgosCollectLinkTask {
 	
+	private ArgosCollectLinkTask() {}
+	
 	private static final String LAYOUT_SEGMENT_NAME_ARGUMENT = "layoutSegmentName";
 	private static final String STEP_NAME_ARGUMENT = "stepName";
 	

@@ -91,10 +91,10 @@ public class DarCollectorsFactory {
             if (response.status() == 200) {
                 return response.body().toString();
             } else {
-                throw new Argos4jError("status code : " + response.status() + " returned");
+                throw new ArgosError("status code : " + response.status() + " returned");
             }
         } catch (IOException e) {
-            throw new Argos4jError(e.getMessage(), e);
+            throw new ArgosError(e.getMessage(), e);
         }
     }
     

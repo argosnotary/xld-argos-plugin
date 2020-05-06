@@ -16,6 +16,8 @@ import com.xebialabs.deployit.plugin.api.flow.StepExitCode;
 
 public class ArgosVerifyTask {
 	
+	private ArgosVerifyTask() {}
+	
 	@Delegate(name="verifyWithArgos")
 	public static List<Step> collectArgosLink(ConfigurationItem ci, String method, Map<String, String> arguments, Parameters parameters) {
         Step step = new Step(){

@@ -39,6 +39,7 @@ public class ArgosConfiguration {
     protected static final List<Operation> OPERATIONS_WITHOUT_VERIFICATION = 
             Arrays.asList(Operation.NOOP, Operation.DESTROY);
     
+    public static final String PROPERTY_ARGOS_PROPERTIES = "argos.properties";
     public static final String PROPERTY_ARGOS_PERSONAL_ACCOUNT = "argosNonPersonalAccount";
     public static final String PROPERTY_VERIFY_WITH_ARGOS = "verifyWithArgos";
     public static final String ENV_PROPERTY_ACTION_ON_INVALID = "actionOnInvalid";
@@ -74,10 +75,13 @@ public class ArgosConfiguration {
             throw new ArgosError(String.format("Loading default.properties: %s", e.getMessage()));
         }
         
-        try (InputStream input = ArgosConfiguration.class.getClassLoader().getResourceAsStream("argos.properties")) {
+        try (InputStream input = ArgosConfiguration.class.getClassLoader().getResourceAsStream(PROPERTY_ARGOS_PROPERTIES)) {
             if (input == null) {
                 logger.warn("argos.properties file not in config directory, defaults are used.");
                 return properties;
+            } else {
+            	logger.warn("not null");
+            	
             }
             properties.load(input);
         } catch (IOException e) {
@@ -146,7 +150,7 @@ public class ArgosConfiguration {
         case NONE:
             return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX)+argosProperties.getProperty(PROPERTY_ARGOS_NONE_TEMPLATE);
         default:
-            return argosProperties.getProperty(PROPERTY_ARGOS_RESULT_PREFIX);
+        	throw new ArgosError(String.format("Unknown Action on Invalid: [%s]", action));
         }
     }
     
