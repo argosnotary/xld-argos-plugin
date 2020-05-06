@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import com.rabobank.argos.argos4j.Argos4jError;
 import com.rabobank.argos.argos4j.FileCollector;
 import com.rabobank.argos.argos4j.RemoteFileCollector;
 import com.rabobank.argos.argos4j.RemoteZipFileCollector;
