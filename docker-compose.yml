@@ -19,13 +19,11 @@ version: '3.1'
 services:
 
   xldeploy:
-    image: xebialabs/xl-deploy:9.5-debian-slim
+    build:
+      context: .
     environment:
       ADMIN_PASSWORD: admin
       ACCEPT_EULA: Y
-    volumes:
-      - ./docker/argos.properties:/opt/xebialabs/xl-deploy-server/config/argos.properties
-      - ./build/distributions/xld-argos-plugin-0.0.1-RC5-SNAPSHOT.xldp:/opt/xebialabs/xl-deploy-server/plugins/xld-argos-plugin-0.0.1-RC5-SNAPSHOT.xldp
     ports:
       - 4516:4516
       

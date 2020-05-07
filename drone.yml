@@ -23,7 +23,7 @@ steps:
         from_secret: signing_key
     SONAR_LOGIN:
       from_secret: sonar_login
-      
+
 - name: build argos xldeploy image
   image: plugins/docker
   settings:
@@ -36,6 +36,17 @@ steps:
       from_secret: docker_login_token
   depends_on:
   - build xlpd
+  
+- name: run xldeploy
+  image: argosnotary/argos-xldeploy-snapshot:${DRONE_BRANCH/\//_}${DRONE_TAG}
+  pull: always
+  detach: true
+  environment:
+    ADMIN_PASSWORD: admin
+    ACCEPT_EULA: Y
+    JAVA_OPTS: '-Xmx1g'
+  depends_on:
+  - build argos xldeploy image
     
 - name: release argos xldeploy image
   image: plugins/docker
@@ -48,8 +59,7 @@ steps:
     username:
       from_secret: docker_login_user
   depends_on:
-  - build xlpd
-  - build argos xldeploy image
+  - run xldeploy
   when:
     event:
     - tag  
