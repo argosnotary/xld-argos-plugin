@@ -120,7 +120,25 @@ If verification is enabled, a verification will be done as the first step during
     |  1. (100) - Register deployeds  (step: RepositoryUpdateStep, rule: null)
 ```
 
- 
+### Collect an Argos Link Object
 
+XL Deploy can generate a Link Object on a Deployment Package and store this to the Argos Notary Service.
+
+#### Run task `collectArgosLink` using xldeploy cli
+
+Run with the cli the following statements or a python script with these statements
+
+```python
+
+	import sys
+
+	package = repository.read(<deployment package version id>)
+	control = deployit.prepareControlTask(package, 'collectArgosLink')
+	taskId = deployit.createControlTask(control)
+	deployit.startTaskAndWait(taskId)
+
+```
+
+The link object will be stored under the `SupplyChain` and using the account both defined in the `Application`.
 
 
