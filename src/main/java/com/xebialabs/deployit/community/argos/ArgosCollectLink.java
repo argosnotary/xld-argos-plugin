@@ -39,12 +39,7 @@ public class ArgosCollectLink {
         LinkBuilder linkBuilder = settings.getArgos4j().getLinkBuilder(linkBuilderSettings);
         DarCollectorsFactory.getCollectors(context, version).forEach(linkBuilder::collectProducts);
         
-        try {
-        	linkBuilder.store(settings.getPassphrase());
-	        return true;
-        } catch (Argos4jError exc) {
-            context.logError(String.format("Exception during Argos Notary add Link: [%s]", exc.getMessage()));
-            return false;
-        }
+        linkBuilder.store(settings.getPassphrase());
+	    return true;        
     }
 }

@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.rabobank.argos.argos4j.Argos4j;
 import com.rabobank.argos.argos4j.Argos4jSettings;
+import com.rabobank.argos.domain.PathHelper;
 import com.xebialabs.deployit.community.argos.model.NonPersonalAccount;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.udm.Version;
@@ -52,25 +53,15 @@ public class ArgosXldClientSettings {
         }
         passphrase = npaAccount.getPassphrase().toCharArray();
         
-        List<String> path = getPath(supplyChain);
-        String supplyChainName = getSupplyChainName(supplyChain);
+        List<String> path = PathHelper.getSupplyChainPath(supplyChain);
+        String supplyChainName = PathHelper.getSupplyChainName(supplyChain);
         
         Argos4jSettings settings = Argos4jSettings.builder()
-                .pathToLabelRoot(path)
+                .path(path)
                 .supplyChainName(supplyChainName)
                 .signingKeyId(npaAccount.getKeyId())
                 .argosServerBaseUrl(ArgosConfiguration.getArgosServerBaseUrl()).build();
         argos4j = new Argos4j(settings);
-    }
-    
-    private static String getSupplyChainName(String supplyChain) {
-        return supplyChain.split(":")[1];
-    }
-
-    private static List<String> getPath(String supplyChain) {
-        List<String> labelList = Arrays.asList(supplyChain.split(":")[0].split("\\."));
-        Collections.reverse(labelList);
-        return labelList;
     }
 
 }

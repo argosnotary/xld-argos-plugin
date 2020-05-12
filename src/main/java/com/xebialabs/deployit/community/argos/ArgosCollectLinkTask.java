@@ -25,6 +25,7 @@ import com.xebialabs.deployit.plugin.api.udm.ConfigurationItem;
 import com.xebialabs.deployit.plugin.api.udm.Delegate;
 import com.xebialabs.deployit.plugin.api.udm.Parameters;
 import com.xebialabs.deployit.plugin.api.udm.Version;
+import com.rabobank.argos.argos4j.Argos4jError;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.flow.Step;
 import com.xebialabs.deployit.plugin.api.flow.StepExitCode;
@@ -51,10 +52,15 @@ public class ArgosCollectLinkTask {
             public StepExitCode execute(ExecutionContext ctx) throws NoSuchAlgorithmException, IOException {
             	Version version = (Version) ci;
             	ctx.logOutput(String.format("Collect artifacts for Application [%s] with version [%s]", version.getApplication().getName(), version.getName()));
-                ArgosCollectLink.collectLink(ctx, version, parameters.getProperty(LAYOUT_SEGMENT_NAME_ARGUMENT), parameters.getProperty(STEP_NAME_ARGUMENT));
-                ctx.logOutput(String.format("Link object stored in Argos Notary for Application [%s] version [%s]", version.getApplication().getName(), version.getName()));
-                ctx.logOutput(String.format("for segment: [%s] and step: [%s]", parameters.getProperty(LAYOUT_SEGMENT_NAME_ARGUMENT), parameters.getProperty(STEP_NAME_ARGUMENT)));
-                return StepExitCode.SUCCESS;
+                try {
+	            	ArgosCollectLink.collectLink(ctx, version, parameters.getProperty(LAYOUT_SEGMENT_NAME_ARGUMENT), parameters.getProperty(STEP_NAME_ARGUMENT));
+	                ctx.logOutput(String.format("Link object stored in Argos Notary for Application [%s] version [%s]", version.getApplication().getName(), version.getName()));
+	                ctx.logOutput(String.format("for segment: [%s] and step: [%s]", parameters.getProperty(LAYOUT_SEGMENT_NAME_ARGUMENT), parameters.getProperty(STEP_NAME_ARGUMENT)));
+	                return StepExitCode.SUCCESS;
+            	} catch (Argos4jError exc) {
+            		ctx.logError(String.format("Exception during Argos Notary add Link: [%s]", exc.getMessage()));
+            		return StepExitCode.FAIL;
+            }
             }
         };
         List<Step> stepList = new ArrayList<>();
