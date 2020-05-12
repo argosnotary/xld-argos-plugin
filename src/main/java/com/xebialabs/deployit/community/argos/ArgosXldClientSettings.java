@@ -15,8 +15,6 @@
  */
 package com.xebialabs.deployit.community.argos;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import com.rabobank.argos.argos4j.Argos4j;

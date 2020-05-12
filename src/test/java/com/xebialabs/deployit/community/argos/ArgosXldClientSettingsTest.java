@@ -60,7 +60,7 @@ class ArgosXldClientSettingsTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		Argos4jSettings settings = Argos4jSettings.builder()
-                .pathToLabelRoot(Arrays.asList("child_label", "root_label"))
+                .path(Arrays.asList("root_label", "child_label"))
                 .supplyChainName("argos-test-app")
                 .signingKeyId(NPA_KEY_ID)
                 .argosServerBaseUrl(ArgosConfiguration.getArgosServerBaseUrl()).build();
