@@ -40,7 +40,7 @@ public class ArgosConfiguration {
             Arrays.asList(Operation.NOOP, Operation.DESTROY);
     
     public static final String PROPERTY_ARGOS_PROPERTIES = "argos.properties";
-    public static final String PROPERTY_ARGOS_PERSONAL_ACCOUNT = "argosNonPersonalAccount";
+    public static final String PROPERTY_ARGOS_SERVICE_ACCOUNT = "argosServiceAccount";
     public static final String PROPERTY_VERIFY_WITH_ARGOS = "verifyWithArgos";
     public static final String ENV_PROPERTY_ACTION_ON_INVALID = "actionOnInvalid";
     public static final String PROPERTY_ARGOS_SUPPLYCHAIN = "argosSupplyChain";

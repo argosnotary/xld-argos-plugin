@@ -20,7 +20,7 @@ import java.util.List;
 import com.rabobank.argos.argos4j.Argos4j;
 import com.rabobank.argos.argos4j.Argos4jSettings;
 import com.rabobank.argos.domain.SupplyChainHelper;
-import com.xebialabs.deployit.community.argos.model.NonPersonalAccount;
+import com.xebialabs.deployit.community.argos.model.ServiceAccount;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.udm.Version;
 
@@ -40,16 +40,16 @@ public class ArgosXldClientSettings {
     @Builder
     public ArgosXldClientSettings(ExecutionContext context, Version version) {
     	String supplyChain = version.getApplication().getProperty(ArgosConfiguration.PROPERTY_ARGOS_SUPPLYCHAIN);
-        NonPersonalAccount npaAccount = version.getApplication().getProperty(ArgosConfiguration.PROPERTY_ARGOS_PERSONAL_ACCOUNT);
-        if (npaAccount == null) {
-            context.logError(String.format("Argos NPA not set on Application [%s]", version.getApplication().getName()));
-            throw new ArgosError("Argos NPA not set on Application");
+        ServiceAccount saAccount = version.getApplication().getProperty(ArgosConfiguration.PROPERTY_ARGOS_SERVICE_ACCOUNT);
+        if (saAccount == null) {
+            context.logError(String.format("Argos SA not set on Application [%s]", version.getApplication().getName()));
+            throw new ArgosError("Argos SA not set on Application");
         }
         if (supplyChain == null) {
             context.logError(String.format("Argos Supply Chain not set on Application [%s]", version.getApplication().getName()));
             throw new ArgosError("Argos Supply Chain not set on Application");
         }
-        passphrase = npaAccount.getPassphrase().toCharArray();
+        passphrase = saAccount.getPassphrase().toCharArray();
         
         List<String> path = SupplyChainHelper.getSupplyChainPath(supplyChain);
         String supplyChainName = SupplyChainHelper.getSupplyChainName(supplyChain);
@@ -57,7 +57,7 @@ public class ArgosXldClientSettings {
         Argos4jSettings settings = Argos4jSettings.builder()
                 .path(path)
                 .supplyChainName(supplyChainName)
-                .signingKeyId(npaAccount.getKeyId())
+                .signingKeyId(saAccount.getKeyId())
                 .argosServerBaseUrl(ArgosConfiguration.getArgosServerBaseUrl()).build();
         argos4j = new Argos4j(settings);
     }

@@ -57,21 +57,21 @@ The following properties can be set in the `argos.properties` file.
 
 ### Configuration.
 
-#### Define NPA.
+#### Define a Service Account.
 
 For the verification of the Deployment Package an an **Argos Service** account is needed. The account should be created on the same branch as the `SupplyChain`. During this creation a `keyid` and a `passphrase` are presented, these are needed for the configuration in XLDeploy.
 
-Choose in the `Environments` branch in XLDeploy for `New` > `argos` > `NonPersonalAccount`
+Choose in the `Environments` branch in XLDeploy for `New` > `argos` > `ServiceAccount`
 
-![New NPA](images/npa_new.png)
+![New SA](images/sa_new.png)
 
 Fill in a relevant name and the `keyid` and the `passphrase` of the account in the **Argos Service**
 
-![Configure NPA](images/npa_configure.png)
+![Configure SA](images/sa_configure.png)
 
 #### Configure Application.
 
-On an `Application` for which the `Deployment Packages` should be verified the `SupplyChain` name in the **Argos Service** should be defined and the `Non Personal Account` which should do the verification.
+On an `Application` for which the `Deployment Packages` should be verified the `SupplyChain` name in the **Argos Service** should be defined and the `Service Account` which should do the verification.
 
 ![Configure Application](images/application_configure.png)
 

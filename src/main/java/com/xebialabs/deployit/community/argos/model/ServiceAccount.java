@@ -24,14 +24,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-@Metadata(root = Metadata.ConfigurationItemRoot.ENVIRONMENTS, label = "Non Personal Account", description = "An Non Personal Account used for the Argos Notary Service")
-@TypeIcon(value="icons/types/argos.NonPersonalAccount.svg")
+@Metadata(root = Metadata.ConfigurationItemRoot.ENVIRONMENTS, label = "Service Account", description = "An Service Account used for the Argos Notary Service")
+@TypeIcon(value="icons/types/argos.ServiceAccount.svg")
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper=false)
-public class NonPersonalAccount extends BaseConfigurationItem {
+public class ServiceAccount extends BaseConfigurationItem {
 
-    @Property(required = true, label = "Key identifier of the Non Personal Account on the Argos Service")
+    @Property(required = true, label = "Key identifier of the Service Account on the Argos Service")
     private String keyId;
 
     @Property(required = true, password = true, label = "Passphrase used to authenticate to the Argos Service")

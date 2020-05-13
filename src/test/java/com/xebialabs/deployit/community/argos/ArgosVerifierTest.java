@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.rabobank.argos.argos4j.Argos4jError;
-import com.xebialabs.deployit.community.argos.model.NonPersonalAccount;
+import com.xebialabs.deployit.community.argos.model.ServiceAccount;
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.services.Repository;
@@ -40,7 +40,7 @@ class ArgosVerifierTest {
     
     private String APPLICATION_NAME = "Applications/aaa/argos-tes-app";
     private String SUPPLYCHAIN = "root_label.child_label:argos-test-app";
-    private String NPA_PASSPHRASE = "bar";
+    private String SA_PASSPHRASE = "bar";
     private String XLD_CLIENT_CONFIG_ID = "Configuration/config/administration/argos/xldconfig";
     private String XLD_USERNAME = "xldUsername";
     private String XLD_PASSWORD = "xldPassword";
@@ -52,7 +52,7 @@ class ArgosVerifierTest {
     Application application;
     
     @Mock
-    NonPersonalAccount npa;
+    ServiceAccount sa;
     
     @Mock
     XldClientConfig xldClientConfig;

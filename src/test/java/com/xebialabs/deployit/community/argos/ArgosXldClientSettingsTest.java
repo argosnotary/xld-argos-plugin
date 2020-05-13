@@ -28,7 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.rabobank.argos.argos4j.Argos4j;
 import com.rabobank.argos.argos4j.Argos4jSettings;
-import com.xebialabs.deployit.community.argos.model.NonPersonalAccount;
+import com.xebialabs.deployit.community.argos.model.ServiceAccount;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.udm.Application;
 import com.xebialabs.deployit.plugin.api.udm.Version;
@@ -37,8 +37,8 @@ import com.xebialabs.deployit.plugin.api.udm.Version;
 class ArgosXldClientSettingsTest {
     
     private String SUPPLYCHAIN = "root_label.child_label:argos-test-app";
-    private String NPA_PASSPHRASE = "bar";
-    private String NPA_KEY_ID = "key_id";
+    private String SA_PASSPHRASE = "bar";
+    private String SA_KEY_ID = "key_id";
     
 	@Mock
 	Version version;
@@ -47,7 +47,7 @@ class ArgosXldClientSettingsTest {
 	ExecutionContext context;
 	
 	@Mock
-	NonPersonalAccount npaAccount;
+	ServiceAccount saAccount;
 	
 	@Mock
 	Application application;
@@ -62,9 +62,9 @@ class ArgosXldClientSettingsTest {
 		Argos4jSettings settings = Argos4jSettings.builder()
                 .path(Arrays.asList("root_label", "child_label"))
                 .supplyChainName("argos-test-app")
-                .signingKeyId(NPA_KEY_ID)
+                .signingKeyId(SA_KEY_ID)
                 .argosServerBaseUrl(ArgosConfiguration.getArgosServerBaseUrl()).build();
-		expectedSettings = new ArgosXldClientSettings(new Argos4j(settings), NPA_PASSPHRASE.toCharArray());
+		expectedSettings = new ArgosXldClientSettings(new Argos4j(settings), SA_PASSPHRASE.toCharArray());
 		
 		
 	}
@@ -73,22 +73,22 @@ class ArgosXldClientSettingsTest {
 	void settingsTest() {
 		when(version.getApplication()).thenReturn(application);
         when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_SUPPLYCHAIN)).thenReturn(SUPPLYCHAIN);
-        when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_PERSONAL_ACCOUNT)).thenReturn(null);
+        when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_SERVICE_ACCOUNT)).thenReturn(null);
         Throwable exception = assertThrows(ArgosError.class, () -> {
         	new ArgosXldClientSettings(context, version);
         });
-        assertEquals("Argos NPA not set on Application", exception.getMessage());
+        assertEquals("Argos SA not set on Application", exception.getMessage());
         
         when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_SUPPLYCHAIN)).thenReturn(null);
-        when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_PERSONAL_ACCOUNT)).thenReturn(npaAccount);
+        when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_SERVICE_ACCOUNT)).thenReturn(saAccount);
         exception = assertThrows(ArgosError.class, () -> {
         	new ArgosXldClientSettings(context, version);
         });
         assertEquals("Argos Supply Chain not set on Application", exception.getMessage());
         
         when(application.getProperty(ArgosConfiguration.PROPERTY_ARGOS_SUPPLYCHAIN)).thenReturn(SUPPLYCHAIN);
-        when(npaAccount.getPassphrase()).thenReturn(NPA_PASSPHRASE);
-        when(npaAccount.getKeyId()).thenReturn(NPA_KEY_ID);
+        when(saAccount.getPassphrase()).thenReturn(SA_PASSPHRASE);
+        when(saAccount.getKeyId()).thenReturn(SA_KEY_ID);
         ArgosXldClientSettings settings = new ArgosXldClientSettings(context, version);
         
         assertEquals(expectedSettings, settings);
