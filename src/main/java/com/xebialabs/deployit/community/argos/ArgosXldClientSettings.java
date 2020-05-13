@@ -19,7 +19,7 @@ import java.util.List;
 
 import com.rabobank.argos.argos4j.Argos4j;
 import com.rabobank.argos.argos4j.Argos4jSettings;
-import com.rabobank.argos.domain.PathHelper;
+import com.rabobank.argos.domain.SupplyChainHelper;
 import com.xebialabs.deployit.community.argos.model.NonPersonalAccount;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.udm.Version;
@@ -51,8 +51,8 @@ public class ArgosXldClientSettings {
         }
         passphrase = npaAccount.getPassphrase().toCharArray();
         
-        List<String> path = PathHelper.getSupplyChainPath(supplyChain);
-        String supplyChainName = PathHelper.getSupplyChainName(supplyChain);
+        List<String> path = SupplyChainHelper.getSupplyChainPath(supplyChain);
+        String supplyChainName = SupplyChainHelper.getSupplyChainName(supplyChain);
         
         Argos4jSettings settings = Argos4jSettings.builder()
                 .path(path)
