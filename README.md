@@ -120,7 +120,7 @@ If verification is enabled, a verification will be done as the first step during
     |  1. (100) - Register deployeds  (step: RepositoryUpdateStep, rule: null)
 ```
 
-### Collect an Argos Link Object
+### Collect an Argos Notary Link Object
 
 XL Deploy can generate a Link Object on a Deployment Package and store this to the Argos Notary Service.
 
@@ -141,4 +141,70 @@ Run with the cli the following statements or a python script with these statemen
 
 The link object will be stored under the `SupplyChain` and using the account both defined in the `Application`.
 
+### Get Artifacts in an Application Version
+
+A REST endpoint extension is added which returns the list of Artifacts defined in a `udm.Version`.
+
+
+| Method | uri                                         | parameters  | parameter description     |
+| ------ | ------------------------------------------- | ----------- | ------------------------- |
+| GET    | /api/extension/argosnotary/collectartifacts | application | XLDeploy Application name |
+|        |                                             | version     | version                   |
+ 
+| Status | returns         | meaning           |
+| ------ | --------------- | ----------------- |
+| 200    | json entity     | list of artifacts |
+| 400    | error in stdout | iput error        |
+| 404    |                 | version not found |         
+ 
+#### Response
+
+```
+{
+    "entity": [
+        {
+            "uri": "file uri",
+            "hash": "sha256 hash"
+        },
+        ...
+    ],
+    "stdout": "",
+    "stderr": "",
+    "exception": null
+}
+```
+
+#### example
+
+```shell
+   $ http://localhost:4516/api/extension/argosnotary/collectartifacts?application=PetClinic&version=1
+```
+
+Returns:
+
+```json
+{
+    "entity": [
+        {
+            "uri": "deployit-manifest.xml",
+            "hash": "995e418909d8402e93885fa30d212eca41754f51165486266978aedce0337c48"
+        },
+        {
+            "uri": "localFile/sprint review.odp",
+            "hash": "659289d6936a753e43bc4dc1cec2e19720c1426ea9fb98b935188449bba4c2a2"
+        },
+        {
+            "uri": "petclinic.war/petclinic.war","hash
+            ":"dea61ebf3c08110f9044cf6c48a45da742809d471c1e817fe9a6637aedab3f10"
+        },
+        {
+            "uri": "index.html",
+            "hash": "38ffd4972ae513a0c79a8be4573403edcd709f0f572105362b08ff50cf6de521"
+        }
+    ],
+    "stdout": "",
+    "stderr": "",
+    "exception": null
+}
+```
 

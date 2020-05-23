@@ -15,9 +15,9 @@
  */
 package com.xebialabs.deployit.community.argos;
 
-import com.rabobank.argos.argos4j.Argos4jError;
 import com.rabobank.argos.argos4j.LinkBuilder;
 import com.rabobank.argos.argos4j.LinkBuilderSettings;
+import com.xebialabs.deployit.community.argos.model.XldClientConfig;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.udm.Version;
 
@@ -37,7 +37,11 @@ public class ArgosCollectLink {
         		.build();
         
         LinkBuilder linkBuilder = settings.getArgos4j().getLinkBuilder(linkBuilderSettings);
-        DarCollectorsFactory.getCollectors(context, version).forEach(linkBuilder::collectProducts);
+        
+
+        XldClientConfig xldConf = ArgosConfiguration.getXldClientConfig(context.getRepository());
+        
+        DarCollectorsFactory.getCollectors(xldConf, version).forEach(linkBuilder::collectProducts);
         
         linkBuilder.store(settings.getPassphrase());
 	    return true;        

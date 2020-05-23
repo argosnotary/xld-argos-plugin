@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.rabobank.argos.argos4j.FileCollector;
@@ -28,7 +29,6 @@ import com.rabobank.argos.argos4j.RemoteFileCollector;
 import com.rabobank.argos.argos4j.RemoteZipFileCollector;
 import com.rabobank.argos.argos4j.RemoteFileCollector.RemoteFileCollectorBuilder;
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;
-import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.udm.Version;
 import com.xebialabs.deployit.plugin.api.udm.artifact.SourceArtifact;
 import com.xebialabs.deployit.plugin.credentials.Credentials;
@@ -39,33 +39,44 @@ import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
 import feign.auth.BasicAuthRequestInterceptor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class DarCollectorsFactory {
 	
 	private DarCollectorsFactory() {}
 	
-	public static List<FileCollector> getCollectors(ExecutionContext context, Version version) {
+	public static List<FileCollector> getCollectors(XldClientConfig xldConf, Version version) {
         
         List<FileCollector> collectors = new ArrayList<>();
         
-        collectors.add(getDarCollector(context, version));
-        collectors.addAll(getRemoteFileCollectors(context, version));
+        collectors.add(getDarCollector(xldConf, version.getId()));
+        collectors.addAll(getRemoteFileCollectors(version));
         
         return collectors;
 		
 	}
 	
-    private static RemoteZipFileCollector getDarCollector(ExecutionContext context, Version version) {
-        XldClientConfig xldConf = ArgosConfiguration.getXldClientConfig(context);
-        String downloadKey = getVersionDownloadKey(xldConf, version.getId());
+	public static List<FileCollector> getCollectors(XldClientConfig xldConf, String versionId, List<Map<String, String>> remoteDeployables) {        
+        List<FileCollector> collectors = new ArrayList<>();
+        
+        collectors.add(getDarCollector(xldConf, versionId));
+        remoteDeployables.forEach(deployable -> collectors.add(
+        		getRemoteFileCollector(deployable.get("uri"), deployable.get("username"), deployable.get("password"))));
+        
+        return collectors;
+		
+	}
+	
+    private static RemoteZipFileCollector getDarCollector(XldClientConfig xldConf, String versionId) {
+        String downloadKey = getVersionDownloadKey(xldConf, versionId);
         return RemoteZipFileCollector.builder()
                 .url(ArgosConfiguration.getXldUrlForExport(downloadKey))
                 .username(xldConf.getUsername()).password(xldConf.getPassword().toCharArray())
                 .build();
-
     }
     
-    private static List<FileCollector> getRemoteFileCollectors(ExecutionContext context, Version version) {
+    private static List<FileCollector> getRemoteFileCollectors(Version version) {
         List<FileCollector> fileCollectors = new ArrayList<>();
         version.getDeployables().forEach(deployable -> {
             if (deployable instanceof SourceArtifact) {
@@ -75,7 +86,7 @@ public class DarCollectorsFactory {
                     try {
                         fileCollectorBuilder = RemoteFileCollector.builder().url(new URL(uri));
                     } catch (MalformedURLException e) {
-                        context.logError(String.format("Exception during Argos Notary verify: [%s]", e.getMessage()));
+                        throw new ArgosError(String.format("Exception during Argos Notary verify: [%s]", e.getMessage()));
                     }
                     Optional<Credentials> credentials = Optional
                             .ofNullable(((SourceArtifact) deployable).getCredentials());
@@ -84,21 +95,33 @@ public class DarCollectorsFactory {
                             .username(((UsernamePasswordCredentials) credentials.get()).getUsername())
                             .password(((UsernamePasswordCredentials) credentials.get()).getPassword().toCharArray());
                     }
-                    fileCollectors.add(fileCollectorBuilder.build());
-    
+                    fileCollectors.add(fileCollectorBuilder.build());    
                 }
             }
         });
         return fileCollectors;
-
     }
+    
+	private static FileCollector getRemoteFileCollector(String uri, String username, String password) {
+		log.info("Create remote file collector"+ uri + " "+username+" "+password);
+		RemoteFileCollectorBuilder fileCollectorBuilder = null;
+		try {
+			fileCollectorBuilder = RemoteFileCollector.builder().url(new URL(uri));
+		} catch (MalformedURLException e) {
+			throw new ArgosError(String.format("Exception during Argos Notary verify: [%s]", e.getMessage()));
+		}
+		if (username != null && password != null) {
+			fileCollectorBuilder.username(username).password(password.toCharArray());
+		}
+		return fileCollectorBuilder.build();
+	}
     
     private static String getVersionDownloadKey(XldClientConfig xldConf, String versionId) {
         String keyUrl = ArgosConfiguration.getXldUrlForDownloadKey(versionId);
         RequestTemplate requestTemplate = new RequestTemplate();
         requestTemplate.method(Request.HttpMethod.GET);
         requestTemplate.target(keyUrl);
-        addXldAuthorization(xldConf, requestTemplate);
+        new BasicAuthRequestInterceptor(xldConf.getUsername(), xldConf.getPassword()).apply(requestTemplate);
         Client client = new Client.Default(null, null);
         Request request = requestTemplate.resolve(new HashMap<>()).request();
         try (Response response = client.execute(request, new Request.Options())) {
@@ -111,11 +134,5 @@ public class DarCollectorsFactory {
             throw new ArgosError(e.getMessage(), e);
         }
     }
-    
-    private static void addXldAuthorization(XldClientConfig xldConf, RequestTemplate requestTemplate) {
-        new BasicAuthRequestInterceptor(xldConf.getUsername(), xldConf.getPassword()).apply(requestTemplate);
-    }
-	
-	
 
 }

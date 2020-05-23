@@ -79,9 +79,13 @@ class ArgosConfigurationTest {
     
     @Test
     void testGetXldClientConfig() {
-    	when(context.getRepository()).thenReturn(repository);
-        when(repository.read("Configuration/config/administration/argos/xldconfig")).thenReturn(xldConf);
-        assertThat(ArgosConfiguration.getXldClientConfig(context), is(xldConf));
+    	when(repository.read("Configuration/config/administration/argos/xldconfig")).thenReturn(xldConf);
+        assertThat(ArgosConfiguration.getXldClientConfig(repository), is(xldConf));
+    }
+    
+    @Test
+    void testGetXldClientConfigId() {
+    	assertThat(ArgosConfiguration.getXldClientConfigId(), is("Configuration/config/administration/argos/xldconfig"));
     }
     
     @Test
