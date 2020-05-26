@@ -18,6 +18,7 @@ package com.xebialabs.deployit.community.argos;
 import com.rabobank.argos.argos4j.Argos4jError;
 import com.rabobank.argos.argos4j.VerificationResult;
 import com.rabobank.argos.argos4j.VerifyBuilder;
+import com.xebialabs.deployit.community.argos.model.XldClientConfig;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.udm.Version;
 
@@ -31,7 +32,9 @@ public class ArgosVerifier {
     			.version(version).build();
     	
         VerifyBuilder verifyBuilder = settings.getArgos4j().getVerifyBuilder();
-        DarCollectorsFactory.getCollectors(context, version).forEach(verifyBuilder::addFileCollector);
+        
+        XldClientConfig xldConf = ArgosConfiguration.getXldClientConfig(context.getRepository());
+        DarCollectorsFactory.getCollectors(xldConf, version).forEach(verifyBuilder::addFileCollector);
         
         VerificationResult verifyResult = null;
         try {

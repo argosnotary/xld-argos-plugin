@@ -32,6 +32,7 @@ import com.xebialabs.deployit.community.argos.model.ArgosVerificationStatus;
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;
 import com.xebialabs.deployit.plugin.api.deployment.specification.Operation;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
+import com.xebialabs.deployit.plugin.api.services.Repository;
 import com.xebialabs.deployit.plugin.api.udm.Environment;
 
 public class ArgosConfiguration {
@@ -80,7 +81,7 @@ public class ArgosConfiguration {
                 logger.warn("argos.properties file not in config directory, defaults are used.");
                 return properties;
             } else {
-            	logger.warn("not null");
+            	logger.warn("argos.properties file from config directory also loaded");
             	
             }
             properties.load(input);
@@ -137,8 +138,12 @@ public class ArgosConfiguration {
         }
     }
     
-    public static XldClientConfig getXldClientConfig(ExecutionContext context) {
-        return context.getRepository().read(argosProperties.getProperty(PROPERTY_XLD_CLIENT_CONF_ID));
+    public static XldClientConfig getXldClientConfig(Repository repository) {
+        return repository.read(argosProperties.getProperty(PROPERTY_XLD_CLIENT_CONF_ID));
+    }
+    
+    public static String getXldClientConfigId() {
+        return argosProperties.getProperty(PROPERTY_XLD_CLIENT_CONF_ID);
     }
     
     public static String getArgosActionTemplate(ActionOnInvalid action) {

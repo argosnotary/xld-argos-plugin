@@ -25,24 +25,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;
-import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
-import com.xebialabs.deployit.plugin.api.services.Repository;
-import com.xebialabs.deployit.plugin.api.udm.Environment;
 import com.xebialabs.deployit.plugin.api.udm.Version;
-
-import feign.RequestTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class DarCollectorsFactoryTest {
     
     @Mock
     XldClientConfig xldConf;
-    
-    @Mock
-    Repository repository;
-    
-    @Mock
-    ExecutionContext context;
     
     @Mock
     Version version;
@@ -53,13 +42,11 @@ class DarCollectorsFactoryTest {
 
 	@Test
 	void testGetCollectors() {
-    	when(context.getRepository()).thenReturn(repository);
-		when(repository.read("Configuration/config/administration/argos/xldconfig")).thenReturn(xldConf);
-		when(xldConf.getUsername()).thenReturn("foo");
+    	when(xldConf.getUsername()).thenReturn("foo");
 		when(xldConf.getPassword()).thenReturn("bar");
 		when(version.getId()).thenReturn("version1");
 		Throwable exception = assertThrows(ArgosError.class, () -> {
-			DarCollectorsFactory.getCollectors(context, version);
+			DarCollectorsFactory.getCollectors(xldConf, version);
         });
         assertEquals("Connection refused (Connection refused)", exception.getMessage());
 	}
