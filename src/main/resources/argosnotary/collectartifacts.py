@@ -43,12 +43,14 @@ def collect_artifacts(applicationName, versionName):
             logging.error("On Application [%s] version [%s] not found" % (applicationName, versionName))
             return
             
+        xldConf = None
+        try:
+            xldConf = repositoryService.read(ArgosConfiguration.getXldClientConfigId());
+        except NotFoundException as exc:
+            response.setStatusCode(500)
+            logging.error("XLD Client Config [%s] not found" % ArgosConfiguration.getXldClientConfigId())
+            return
         
-        ci = repositoryService.read(ArgosConfiguration.getXldClientConfigId());
-        
-        xldConf = XldClientConfig()
-        xldConf.setUsername(ci.getProperty("username"))
-        xldConf.setPassword(ci.getProperty("password"))
         
         tempDeployables = version.getDeployables()
         remoteDeployables = []
@@ -65,7 +67,7 @@ def collect_artifacts(applicationName, versionName):
                     dep['password'] = creds.getPassword()
                 remoteDeployables.append(dep)
         try:
-            response.setEntity(ArgosCollectArtifactList.collectArtifacts(xldConf, versionId, remoteDeployables))
+            response.setEntity(ArgosCollectArtifactList.collectArtifacts(xldConf.getUsername(), xldConf.getPassword(), versionId, remoteDeployables))
         except Exception as exc:
             logging.error("During artifact collect %s", exc.message)
             response.setStatusCode(400)

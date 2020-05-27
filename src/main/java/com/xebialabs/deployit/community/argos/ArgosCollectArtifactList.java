@@ -29,8 +29,11 @@ public class ArgosCollectArtifactList {
     
     private ArgosCollectArtifactList() {}
 
-    public static List<Map<String, String>> collectArtifacts(XldClientConfig xldConf, String versionId, List<Map<String, String>> remoteDeployables) {
-        List<Map<String, String>> artifacts = new ArrayList<>();
+    public static List<Map<String, String>> collectArtifacts(String username, String password, String versionId, List<Map<String, String>> remoteDeployables) {
+    	XldClientConfig xldConf =  new XldClientConfig();
+    	xldConf.setUsername(username);
+    	xldConf.setPassword(password);
+    	List<Map<String, String>> artifacts = new ArrayList<>();
     	ArtifactListBuilder artifactListBuilder = Argos4j.getArtifactListBuilder();
         
     	DarCollectorsFactory.getCollectors(xldConf, versionId, remoteDeployables).forEach(artifactListBuilder::addFileCollector);
