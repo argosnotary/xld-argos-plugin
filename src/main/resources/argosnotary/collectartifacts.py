@@ -15,10 +15,12 @@
 #
 
 import com.xebialabs.deployit.community.argos.ArgosCollectArtifactList as ArgosCollectArtifactList
+import com.xebialabs.deployit.community.argos.ArgosError as ArgosError
 import com.xebialabs.deployit.community.argos.ArgosConfiguration as ArgosConfiguration
 import com.xebialabs.deployit.community.argos.model.XldClientConfig as XldClientConfig
 
 import com.xebialabs.deployit.plugin.api.udm.artifact.SourceArtifact as SourceArtifact
+import com.xebialabs.deployit.exception.NotFoundException as NotFoundException 
 
 import com.rabobank.argos.argos4j.internal.mapper.RestMapper;
 
@@ -28,28 +30,19 @@ import logging
 
 global repositoryService, context
 
-logging.basicConfig(stream=sys.stdout, level="INFO")        
+logging.basicConfig(stream=sys.stdout, level="INFO")
 
-applicationName = None
-versionName = None
-
-if not 'application' in request.query:
-    logging.error("Query parameter application not set")
-    response.setStatusCode(400)
-else:
-    applicationName = request.query['application']
-    
-if not 'version' in request.query:
-    logging.error("Query parameter version not set")
-    response.setStatusCode(400)
-else:
-    versionName = request.query['version']
-
-if not applicationName is None and not versionName is None:
+def collect_artifacts(applicationName, versionName):
     cis = repositoryService.query(Type.valueOf("udm.Application"), None, None, applicationName, None, None, 0, -1)
     if cis:
         versionId = cis[0].getId()+'/'+versionName
-        version = repositoryService.read(versionId)
+        try:
+            version = repositoryService.read(versionId)
+        except NotFoundException as exc:
+            response.setStatusCode(404)
+            logging.error("ERROR: On Application [%s] version [%s] not found" % (applicationName, versionName))
+            return
+            
         
         ci = repositoryService.read(ArgosConfiguration.getXldClientConfigId());
         
@@ -78,3 +71,26 @@ if not applicationName is None and not versionName is None:
             response.setStatusCode(400)
     else:
         response.setStatusCode(404)
+        logging.error("Application [%s] unknown" % applicationName)
+     
+
+applicationName = None
+versionName = None
+
+if not 'application' in request.query:
+    logging.error("Query parameter application not set")
+    response.setStatusCode(400)
+else:
+    applicationName = request.query['application']
+    
+if not 'version' in request.query:
+    logging.error("Query parameter version not set")
+    response.setStatusCode(400)
+else:
+    versionName = request.query['version']
+
+if not applicationName is None and not versionName is None:
+    collect_artifacts(applicationName, versionName)
+    
+
+    
