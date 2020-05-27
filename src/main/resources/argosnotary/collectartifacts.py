@@ -40,7 +40,7 @@ def collect_artifacts(applicationName, versionName):
             version = repositoryService.read(versionId)
         except NotFoundException as exc:
             response.setStatusCode(404)
-            logging.error("ERROR: On Application [%s] version [%s] not found" % (applicationName, versionName))
+            logging.error("On Application [%s] version [%s] not found" % (applicationName, versionName))
             return
             
         
@@ -67,7 +67,7 @@ def collect_artifacts(applicationName, versionName):
         try:
             response.setEntity(ArgosCollectArtifactList.collectArtifacts(xldConf, versionId, remoteDeployables))
         except Exception as exc:
-            logging.error("ERROR: during artifact collect %s", exc.message)
+            logging.error("During artifact collect %s", exc.message)
             response.setStatusCode(400)
     else:
         response.setStatusCode(404)
