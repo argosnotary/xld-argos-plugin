@@ -20,7 +20,8 @@ import com.xebialabs.deployit.community.argos.ArgosConfiguration as ArgosConfigu
 import com.xebialabs.deployit.community.argos.model.XldClientConfig as XldClientConfig
 
 import com.xebialabs.deployit.plugin.api.udm.artifact.SourceArtifact as SourceArtifact
-import com.xebialabs.deployit.exception.NotFoundException as NotFoundException 
+import com.xebialabs.deployit.exception.NotFoundException as NotFoundException
+import com.xebialabs.deployit.util.PasswordEncrypter as PasswordEncrypter
 
 import com.rabobank.argos.argos4j.internal.mapper.RestMapper;
 
@@ -67,7 +68,7 @@ def collect_artifacts(applicationName, versionName):
                     dep['password'] = creds.getPassword()
                 remoteDeployables.append(dep)
         try:
-            response.setEntity(ArgosCollectArtifactList.collectArtifacts(xldConf.getUsername(), xldConf.getPassword(), versionId, remoteDeployables))
+            response.setEntity(ArgosCollectArtifactList.collectArtifacts(xldConf.getUsername(), PasswordEncrypter.getInstance().decrypt(xldConf.getPassword()), versionId, remoteDeployables))
         except Exception as exc:
             logging.error("During artifact collect %s", exc.message)
             response.setStatusCode(400)
