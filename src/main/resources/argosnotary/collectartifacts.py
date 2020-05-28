@@ -28,6 +28,7 @@ import com.rabobank.argos.argos4j.internal.mapper.RestMapper;
 from com.xebialabs.deployit.plugin.api.reflect import Type
 import sys
 import logging
+from __builtin__ import None
 
 global repositoryService, context
 
@@ -67,8 +68,15 @@ def collect_artifacts(applicationName, versionName):
                     dep['username'] = creds.getUsername()
                     dep['password'] = creds.getPassword()
                 remoteDeployables.append(dep)
+        # for backwards compatibility
+        password = None
+        if PasswordEncrypter.getInstance().isEncrypted(xldConf.getPassword()):
+            password = PasswordEncrypter.getInstance().decrypt(xldConf.getPassword())
+        else:
+            password = xldConf.getPassword()
         try:
-            response.setEntity(ArgosCollectArtifactList.collectArtifacts(xldConf.getUsername(), PasswordEncrypter.getInstance().decrypt(xldConf.getPassword()), versionId, remoteDeployables))
+            
+            response.setEntity(ArgosCollectArtifactList.collectArtifacts(xldConf.getUsername(), password, versionId, remoteDeployables))
         except Exception as exc:
             logging.error("During artifact collect %s", exc.message)
             response.setStatusCode(400)
