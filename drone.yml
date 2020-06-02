@@ -29,7 +29,7 @@ steps:
   settings:
     context: .
     repo: argosnotary/argos-xldeploy-snapshot
-    tags: ${DRONE_BRANCH/\//_}${DRONE_TAG}
+    tags: ${DRONE_BRANCH//\//_}${DRONE_TAG}
     username:
       from_secret: docker_login_user
     password:
