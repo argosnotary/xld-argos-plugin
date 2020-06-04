@@ -29,7 +29,7 @@ steps:
   settings:
     context: .
     repo: argosnotary/argos-xldeploy-snapshot
-    tags: ${DRONE_BRANCH//\//_}${DRONE_TAG}
+    tags: ${DRONE_TAG:-${DRONE_BRANCH/\//_}}
     username:
       from_secret: docker_login_user
     password:
@@ -38,7 +38,7 @@ steps:
   - build xlpd
   
 - name: run xldeploy
-  image: argosnotary/argos-xldeploy-snapshot:${DRONE_BRANCH/\//_}${DRONE_TAG}
+  image: argosnotary/argos-xldeploy-snapshot:${DRONE_TAG:-${DRONE_BRANCH/\//_}}
   pull: always
   detach: true
   environment:
