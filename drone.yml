@@ -11,7 +11,7 @@ steps:
 - name: build xlpd
   image: gradle:6.3-jdk8
   commands:
-  - gradle license test jacocoTestReport xlPlugin javadocJar sourcesJar uploadArchives sonarqube -Dorg.gradle.daemon=false -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_LOGIN -Dsonar.projectKey=xld-argos-plugin -Dsonar.organization=argosnotary
+  - gradle license test jacocoTestReport xlPlugin javadocJar sourcesJar sonarqube -Dorg.gradle.daemon=false -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_LOGIN -Dsonar.projectKey=xld-argos-plugin -Dsonar.organization=argosnotary
   environment:
     ORG_GRADLE_PROJECT_ossrhLoginUser:
       from_secret: ossrh_login_user
@@ -29,7 +29,7 @@ steps:
   settings:
     context: .
     repo: argosnotary/argos-xldeploy-snapshot
-    tags: ${DRONE_TAG:-${DRONE_BRANCH/\//_}}
+    tags: ${DRONE_TAG:-${DRONE_BRANCH//\//_}}
     username:
       from_secret: docker_login_user
     password:
@@ -37,8 +37,8 @@ steps:
   depends_on:
   - build xlpd
   
-- name: run xldeploy
-  image: argosnotary/argos-xldeploy-snapshot:${DRONE_TAG:-${DRONE_BRANCH/\//_}}
+- name: xldeploy
+  image: argosnotary/argos-xldeploy-snapshot:${DRONE_TAG:-${DRONE_BRANCH//\//_}}
   pull: always
   detach: true
   environment:
@@ -48,21 +48,34 @@ steps:
   depends_on:
   - build argos xldeploy image
     
-- name: release argos xldeploy image
-  image: plugins/docker
-  settings:
-    context: .
-    repo: argosnotary/argos-xldeploy
-    auto_tag: true
-    password:
-      from_secret: docker_login_token
-    username:
-      from_secret: docker_login_user
+- name: test xld
+  image: curlimages/curl
+  pull: always
+  commands:
+  - --retry-connrefused --retry 10 --retry-delay 0 -u admin:admin "http://xldeploy:4516/deployit/server/state"
   depends_on:
-  - run xldeploy
+  - xldeploy
+
+- name: upload xlpd
+  image: gradle:6.3-jdk8
+  commands:
+  - gradle uploadArchives
+  environment:
+    ORG_GRADLE_PROJECT_ossrhLoginUser:
+      from_secret: ossrh_login_user
+    ORG_GRADLE_PROJECT_ossrhLoginPassword:
+      from_secret: ossrh_login_password
+    ORG_GRADLE_PROJECT_signingPassword:
+      from_secret: signing_password
+    ORG_GRADLE_PROJECT_signingKey:
+        from_secret: signing_key
+    SONAR_LOGIN:
+      from_secret: sonar_login
+  depends_on:
+  - test xld
   when:
     event:
-    - tag  
+    - tag
 
 trigger:
   event:

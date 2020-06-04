@@ -26,7 +26,6 @@ services:
       ACCEPT_EULA: Y
     volumes:
       - ./docker/argos.properties:/opt/xebialabs/xl-deploy-server/config/argos.properties
-      - ./build/distributions/xld-argos-plugin-0.0.1-RC6-SNAPSHOT.xldp:/opt/xebialabs/xl-deploy-server/plugins/xld-argos-plugin-0.0.1-RC6-SNAPSHOT.xldp
     ports:
       - 4516:4516
       
@@ -35,3 +34,9 @@ services:
     ports:
      - "2022:22"
      - "8082:8080"
+     
+  testxld:
+    image: curlimages/curl
+    command: --retry-connrefused --retry 10 --retry-delay 0 -u admin:admin "http://xldeploy:4516/deployit/server/state"
+    depends_on:
+    - xldeploy
