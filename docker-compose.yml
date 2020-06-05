@@ -37,6 +37,6 @@ services:
      
   testxld:
     image: curlimages/curl
-    command: --retry-connrefused --retry 10 --retry-delay 0 -u admin:admin "http://xldeploy:4516/deployit/server/state"
+    command: curl --retry-connrefused --retry 10 --retry-delay 0 -u admin:admin "http://xldeploy:4516/deployit/server/state"
     depends_on:
     - xldeploy

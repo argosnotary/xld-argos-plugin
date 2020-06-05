@@ -52,7 +52,7 @@ steps:
   image: curlimages/curl
   pull: always
   commands:
-  - --retry-connrefused --retry 10 --retry-delay 0 -u admin:admin "http://xldeploy:4516/deployit/server/state"
+  - curl --retry-connrefused --retry 10 --retry-delay 0 -u admin:admin "http://xldeploy:4516/deployit/server/state"
   depends_on:
   - xldeploy
 
