@@ -38,7 +38,7 @@ public class ArgosVerifier {
         
         VerificationResult verifyResult = null;
         try {
-            verifyResult = verifyBuilder.verify(settings.getPassphrase());
+            verifyResult = verifyBuilder.verify();
         } catch (Argos4jError exc) {
             context.logError(String.format("Exception during Argos Notary verify: [%s]", exc.getMessage()));
             return false;
