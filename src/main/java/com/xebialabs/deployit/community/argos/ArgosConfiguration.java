@@ -31,7 +31,6 @@ import com.xebialabs.deployit.community.argos.model.ActionOnInvalid;
 import com.xebialabs.deployit.community.argos.model.ArgosVerificationStatus;
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;
 import com.xebialabs.deployit.plugin.api.deployment.specification.Operation;
-import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.services.Repository;
 import com.xebialabs.deployit.plugin.api.udm.Environment;
 
