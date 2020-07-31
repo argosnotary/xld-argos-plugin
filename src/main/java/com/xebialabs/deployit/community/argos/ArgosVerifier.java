@@ -15,6 +15,8 @@
  */
 package com.xebialabs.deployit.community.argos;
 
+import java.util.List;
+
 import com.rabobank.argos.argos4j.Argos4jError;
 import com.rabobank.argos.argos4j.VerificationResult;
 import com.rabobank.argos.argos4j.VerifyBuilder;
@@ -31,7 +33,14 @@ public class ArgosVerifier {
     			.context(context)
     			.version(version).build();
     	
-        VerifyBuilder verifyBuilder = settings.getArgos4j().getVerifyBuilder();
+    	VerifyBuilder verifyBuilder;
+    	List<String> path = settings.getArgos4j().getSettings().getPath();
+        if (path != null && !path.isEmpty()) {
+            String supplyChainPath = String.join(".", path);
+            verifyBuilder = settings.getArgos4j().getVerifyBuilder(supplyChainPath);
+        } else {
+            verifyBuilder = settings.getArgos4j().getVerifyBuilder();
+        }
         
         XldClientConfig xldConf = ArgosConfiguration.getXldClientConfig(context.getRepository());
         DarCollectorsFactory.getCollectors(xldConf, version).forEach(verifyBuilder::addFileCollector);
