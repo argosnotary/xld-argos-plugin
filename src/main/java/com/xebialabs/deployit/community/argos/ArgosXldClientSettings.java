@@ -57,7 +57,7 @@ public class ArgosXldClientSettings {
         Argos4jSettings settings = Argos4jSettings.builder()
                 .path(path)
                 .supplyChainName(supplyChainName)
-                .signingKeyId(saAccount.getKeyId())
+                .keyId(saAccount.getKeyId())
                 .argosServerBaseUrl(ArgosConfiguration.getArgosServerBaseUrl()).build();
         argos4j = new Argos4j(settings);
     }

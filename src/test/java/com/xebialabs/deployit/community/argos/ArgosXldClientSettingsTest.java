@@ -62,7 +62,7 @@ class ArgosXldClientSettingsTest {
 		Argos4jSettings settings = Argos4jSettings.builder()
                 .path(Arrays.asList("root_label", "child_label"))
                 .supplyChainName("argos-test-app")
-                .signingKeyId(SA_KEY_ID)
+                .keyId(SA_KEY_ID)
                 .argosServerBaseUrl(ArgosConfiguration.getArgosServerBaseUrl()).build();
 		expectedSettings = new ArgosXldClientSettings(new Argos4j(settings), SA_PASSPHRASE.toCharArray());
 		
