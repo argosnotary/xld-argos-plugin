@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2019 - 2020 Rabobank Nederland
+# Copyright (C) 2020 Argos Notary Coöperatie UA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.xebialabs.deployit.plugin.api.udm.artifact.SourceArtifact as SourceAr
 import com.xebialabs.deployit.exception.NotFoundException as NotFoundException
 import com.xebialabs.deployit.util.PasswordEncrypter as PasswordEncrypter
 
-import com.rabobank.argos.argos4j.internal.mapper.RestMapper;
+import com.argosnotary.argos.argos4j.internal.mapper.RestMapper;
 
 from com.xebialabs.deployit.plugin.api.reflect import Type
 import sys

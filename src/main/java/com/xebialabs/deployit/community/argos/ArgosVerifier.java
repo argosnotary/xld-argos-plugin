@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2019 - 2020 Rabobank Nederland
+ * Copyright (C) 2020 Argos Notary Coöperatie UA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@ package com.xebialabs.deployit.community.argos;
 
 import java.util.List;
 
-import com.rabobank.argos.argos4j.Argos4jError;
-import com.rabobank.argos.argos4j.VerificationResult;
-import com.rabobank.argos.argos4j.VerifyBuilder;
+import com.argosnotary.argos.argos4j.Argos4jError;
+import com.argosnotary.argos.argos4j.VerificationResult;
+import com.argosnotary.argos.argos4j.VerifyBuilder;
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.udm.Version;
@@ -36,8 +36,7 @@ public class ArgosVerifier {
     	VerifyBuilder verifyBuilder;
     	List<String> path = settings.getArgos4j().getSettings().getPath();
         if (path != null && !path.isEmpty()) {
-            String supplyChainPath = String.join(".", path);
-            verifyBuilder = settings.getArgos4j().getVerifyBuilder(supplyChainPath);
+            verifyBuilder = settings.getArgos4j().getVerifyBuilder(path);
         } else {
             verifyBuilder = settings.getArgos4j().getVerifyBuilder();
         }

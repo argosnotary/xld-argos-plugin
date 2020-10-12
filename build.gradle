@@ -71,6 +71,11 @@ test {
     useJUnitPlatform()
 }
 
+task getProjectFiles {
+    mkdir "build"
+    ant.get(src: 'https://raw.githubusercontent.com/argosnotary/argos/master/docs/header.txt', dest: 'build/header.txt', skipexisting: 'true')
+  }
+
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
@@ -95,7 +100,7 @@ signing {
 
 license {
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    header rootProject.file('src/main/license/license_header.txt')
+    header rootProject.file('build/header.txt')
     strictCheck true
 }
 

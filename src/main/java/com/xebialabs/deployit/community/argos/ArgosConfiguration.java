@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2019 - 2020 Rabobank Nederland
+ * Copyright (C) 2020 Argos Notary Coöperatie UA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.rabobank.argos.argos4j.Argos4jError;
+import com.argosnotary.argos.argos4j.Argos4jError;
 import com.xebialabs.deployit.community.argos.model.ActionOnInvalid;
 import com.xebialabs.deployit.community.argos.model.ArgosVerificationStatus;
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;

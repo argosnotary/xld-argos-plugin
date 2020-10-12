@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2019 - 2020 Rabobank Nederland
+ * Copyright (C) 2020 Argos Notary Coöperatie UA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ class ArgosConfigurationTest {
     
     @Test
     void testGetArgosServerBaseUrl() {
-        assertThat(ArgosConfiguration.getArgosServerBaseUrl(), is("http://foo-service:8080/api"));
+        assertThat(ArgosConfiguration.getArgosServerBaseUrl(), is("http://localhost:8080/api"));
     }
     
     @Test

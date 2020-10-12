@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2019 - 2020 Rabobank Nederland
+ * Copyright (C) 2020 Argos Notary Coöperatie UA
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.rabobank.argos.argos4j.Argos4j;
-import com.rabobank.argos.argos4j.ArtifactListBuilder;
-import com.rabobank.argos.domain.link.Artifact;
+import com.argosnotary.argos.argos4j.Argos4j;
+import com.argosnotary.argos.argos4j.ArtifactListBuilder;
+import com.argosnotary.argos.domain.link.Artifact;
 import com.xebialabs.deployit.community.argos.model.XldClientConfig;
 
 public class ArgosCollectArtifactList {
