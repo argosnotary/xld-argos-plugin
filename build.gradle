@@ -9,9 +9,9 @@ plugins {
     id 'signing'
 }
 
-group = "com.rabobank.argos"
+group = "com.argosnotary.argos"
 archivesBaseName = "xld-argos-plugin"
-version = "0.1.0"
+version = "1.0.0"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -37,16 +37,17 @@ repositories {
 dependencies {
     compile "com.xebialabs.deployit:udm-plugin-api:$apiVersion"
     compile "com.xebialabs.deployit:engine-api:$apiVersion"
-    compile "com.rabobank.argos:argos4j:0.1.0"
+    compile "com.argosnotary.argos:argos4j:1.0.2"
     compile "org.projectlombok:lombok:1.18.14"
-    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.14'
     
     testCompile "org.junit.jupiter:junit-jupiter:5.7.0"
     testCompile "org.hamcrest:hamcrest-library:2.2"
-    testCompile "org.junit.jupiter:junit-jupiter-params:5.7.0"    
-    testCompile "org.mockito:mockito-junit-jupiter:3.5.13"
+    testCompile "org.junit.jupiter:junit-jupiter-params:5.6.2"    
+    testCompile "org.mockito:mockito-junit-jupiter:3.4.6"
+    testCompile "com.github.tomakehurst:wiremock:2.27.2"
     
-    distBundle "com.rabobank.argos:argos4j:0.1.0"
+    distBundle "com.argosnotary.argos:argos4j:1.0.2"
     
 }
 
@@ -74,7 +75,7 @@ test {
 task getProjectFiles {
     mkdir "build"
     ant.get(src: 'https://raw.githubusercontent.com/argosnotary/argos/master/docs/header.txt', dest: 'build/header.txt', skipexisting: 'true')
-  }
+}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
@@ -121,10 +122,10 @@ uploadArchives {
       }
 
       pom.project {
-        name 'XLDeploy Argos plugin'
+        name 'XLDeploy Argos Notary plugin'
         packaging 'xldp'
         
-        description 'A plugin used in XLDeploy to communicate with an Argos Service.'
+        description 'A plugin used in XLDeploy to communicate with an Argos Notary Service.'
         url 'https://github.com/argosnotary/argos/tree/master'
 
         scm {
@@ -144,7 +145,7 @@ uploadArchives {
           developer {
             id 'borstg'
             name 'Gerard Borst'
-            email 'gerard.borst@rabobank.nl'
+            email 'gerard.borst@argosnotary.com'
           }
         }
       }

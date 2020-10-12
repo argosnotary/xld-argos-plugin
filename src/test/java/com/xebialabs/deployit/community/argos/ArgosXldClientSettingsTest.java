@@ -26,8 +26,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.rabobank.argos.argos4j.Argos4j;
-import com.rabobank.argos.argos4j.Argos4jSettings;
+import com.argosnotary.argos.argos4j.Argos4j;
+import com.argosnotary.argos.argos4j.Argos4jSettings;
 import com.xebialabs.deployit.community.argos.model.ServiceAccount;
 import com.xebialabs.deployit.plugin.api.flow.ExecutionContext;
 import com.xebialabs.deployit.plugin.api.udm.Application;
@@ -36,7 +36,7 @@ import com.xebialabs.deployit.plugin.api.udm.Version;
 @ExtendWith(MockitoExtension.class)
 class ArgosXldClientSettingsTest {
     
-    private String SUPPLYCHAIN = "root_label.child_label:argos-test-app";
+    private String SUPPLYCHAIN = "root-label.child-label:argos-test-app";
     private String SA_PASSPHRASE = "bar";
     private String SA_KEY_ID = "key_id";
     
@@ -60,7 +60,7 @@ class ArgosXldClientSettingsTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		Argos4jSettings settings = Argos4jSettings.builder()
-                .path(Arrays.asList("root_label", "child_label"))
+                .path(Arrays.asList("root-label", "child-label"))
                 .supplyChainName("argos-test-app")
                 .keyId(SA_KEY_ID)
                 .argosServerBaseUrl(ArgosConfiguration.getArgosServerBaseUrl()).build();
