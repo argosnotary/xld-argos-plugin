@@ -11,42 +11,36 @@ steps:
 - name: build xlpd
   image: gradle:6.3-jdk8
   commands:
-  - gradle license test jacocoTestReport xlPlugin javadocJar sourcesJar sonarqube -Dorg.gradle.daemon=false -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_LOGIN -Dsonar.projectKey=xld-argos-plugin -Dsonar.organization=argosnotary
-  environment:
-    ORG_GRADLE_PROJECT_ossrhLoginUser:
-      from_secret: ossrh_login_user
-    ORG_GRADLE_PROJECT_ossrhLoginPassword:
-      from_secret: ossrh_login_password
-    ORG_GRADLE_PROJECT_signingPassword:
-      from_secret: signing_password
-    ORG_GRADLE_PROJECT_signingKey:
-        from_secret: signing_key
-    SONAR_LOGIN:
-      from_secret: sonar_login
-
-- name: build argos xldeploy image
-  image: plugins/docker
-  settings:
-    context: .
-    repo: argosnotary/argos-xldeploy-snapshot
-    tags: ${DRONE_TAG:-${DRONE_BRANCH//\//_}}
-    username:
-      from_secret: docker_login_user
-    password:
-      from_secret: docker_login_token
+  - gradle license test jacocoTestReport xlPlugin
+  
+- name: copy
+  image: busybox
+  commands:
+  - cp /drone/src/build/distributions/xld-argos-plugin-*.xldp /plugin/xld-argos-plugin.xldp
+  - cp /drone/src/docker/argos.properties /config/argos.properties
+  - chmod -R 777 /plugin /config
+  volumes:
+  - name: plugin_volume
+    path: /plugin
+  - name: config_volume
+    path: /config
   depends_on:
   - build xlpd
-  
+
 - name: xldeploy
-  image: argosnotary/argos-xldeploy-snapshot:${DRONE_TAG:-${DRONE_BRANCH//\//_}}
-  pull: always
+  image: xebialabs/xl-deploy:9.7
   detach: true
   environment:
     ADMIN_PASSWORD: admin
     ACCEPT_EULA: Y
     JAVA_OPTS: '-Xmx1g'
+  volumes:
+  - name: plugin_volume
+    path: /opt/xebialabs/xl-deploy-server/plugins
+  - name: config_volume
+    path: /opt/xebialabs/xl-deploy-server/conf
   depends_on:
-  - build argos xldeploy image
+  - copy
     
 - name: test xld
   image: curlimages/curl
@@ -55,6 +49,56 @@ steps:
   - curl --retry-connrefused --retry 10 --retry-delay 0 -u admin:admin "http://xldeploy:4516/deployit/server/state"
   depends_on:
   - xldeploy
+
+- name: build release
+  image: gradle:6.3-jdk8
+  commands:
+  - gradle license test jacocoTestReport xlPlugin javadocJar sourcesJar sonarqube -Dorg.gradle.daemon=false -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_LOGIN -Dsonar.projectKey=xld-argos-plugin -Dsonar.organization=argosnotary
+  environment:
+    SONAR_LOGIN:
+      from_secret: sonar_login
+  when:
+    event:
+    - tag
+    - push
+  depends_on:
+  - test xld
+
+- name: release argos xldeploy stub image
+  image: plugins/docker
+  settings:
+    context: .
+    repo: argosnotary/argos-xldeploy
+    tags: ${DRONE_BRANCH//\//_}-beta
+    username:
+      from_secret: docker_login_user
+    password:
+      from_secret: docker_login_token
+  depends_on:
+  - build release
+  when:
+    ref:
+      include:
+      - "refs/heads/master"
+      - "refs/heads/release/*"
+    event:
+    - push
+
+- name: release argos xldeploy image
+  image: plugins/docker
+  settings:
+    context: .
+    repo: argosnotary/argos-xldeploy
+    tags: ${DRONE_TAG}
+    username:
+      from_secret: docker_login_user
+    password:
+      from_secret: docker_login_token
+  depends_on:
+  - build release
+  when:
+    event:
+    - tag
 
 - name: upload xlpd
   image: gradle:6.3-jdk8
@@ -69,16 +113,21 @@ steps:
       from_secret: signing_password
     ORG_GRADLE_PROJECT_signingKey:
         from_secret: signing_key
-    SONAR_LOGIN:
-      from_secret: sonar_login
   depends_on:
-  - test xld
+  - build release
   when:
     event:
     - tag
+    
+volumes:
+- name: plugin_volume
+  temp: {}
+- name: config_volume
+  temp: {}
 
 trigger:
   event:
   - push
   - tag
+  - pull_request
 ...
