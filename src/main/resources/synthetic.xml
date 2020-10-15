@@ -22,16 +22,16 @@
 
     <type-modification type="argos.ServiceAccount" >
         <property name="keyId">
-        <rule type="regex" pattern="^([0-9]|[a-f]){64}$"
+        <rule type="regex" pattern="^[0-9a-f]{64}$"
                 message="String should be hexadecimal string of length 64" />
         </property>
     </type-modification>
     
     <type-modification type="udm.Application">
         <property name="argosSupplyChain" required="false" category="Argos Notary" label="Argos SupplyChain" >    
-        <rule type="regex" pattern="^(([a-z]{1}[a-z0-9_]*)\.)*([a-z]{1}[a-z0-9_]*)+\:([a-z]{1}[a-z0-9-]*)$"
-            message="String should be a string with Gradle dependency format 
-                labels segregated by &quot;.&quot;, a &quot;:&quot; followed by the supply chain name, all in lower case."/>
+        <rule type="regex" pattern="^((([a-z]|[a-z][a-z0-9\-]{0,61}[a-z0-9])\.)*([a-z]|[a-z][a-z0-9\-]{0,61}[a-z0-9])\:([a-z]|[a-z][a-z0-9\-]*[a-z0-9]))$"
+            message="String should have a hostname format of the path with 1 or more labels and Supply Chain name as 1 label all using lowercase alphanumeric characters, 
+                the path followed by a &quot;:&quot; followed by the supply chain name."/>
         </property>
         <property name="argosServiceAccount" kind="ci" required="false" referenced-type="argos.ServiceAccount" category="Argos Notary" label="Argos Service Account" /> 
     </type-modification>
