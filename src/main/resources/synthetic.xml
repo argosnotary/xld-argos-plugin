@@ -41,7 +41,7 @@
         <method name="collectArgosLink" label="Collect Argos Link Object" delegate="collectArgosLink">
         	<parameters>
         		<parameter name="layoutSegmentName" kind="string" label="Argos Segment Name" required="true" default="xldeploy"/>
-        		<parameter name="stepName" kind="string" label="Step Name in Segment" required="true" default="collect_dar"/>
+        		<parameter name="stepName" kind="string" label="Step Name in Segment" required="true" default="collect-dar"/>
         	</parameters>
         </method>
     </type-modification>
