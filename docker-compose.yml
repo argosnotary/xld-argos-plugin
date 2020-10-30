@@ -10,7 +10,7 @@ services:
       ACCEPT_EULA: Y
     volumes:
       - ./docker/argos.properties:/opt/xebialabs/xl-deploy-server/conf/argos.properties
-      - ./build/distributions/xld-argos-plugin-1.0.0.xldp:/opt/xebialabs/xl-deploy-server/plugins/xld-argos-plugin.xldp
+      - ./build/distributions:/opt/xebialabs/xl-deploy-server/hotfix/plugins
     ports:
       - 4516:4516
       
