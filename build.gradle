@@ -37,8 +37,8 @@ dependencies {
     compile "com.xebialabs.deployit:udm-plugin-api:$apiVersion"
     compile "com.xebialabs.deployit:engine-api:$apiVersion"
     compile "com.argosnotary.argos:argos4j:1.0.3"
-    compile "org.projectlombok:lombok:1.18.16"
-    annotationProcessor 'org.projectlombok:lombok:1.18.14'
+    compile "org.projectlombok:lombok:1.18.20"
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
     
     testCompile "org.junit.jupiter:junit-jupiter:5.7.0"
     testCompile "org.hamcrest:hamcrest-library:2.2"
