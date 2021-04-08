@@ -43,7 +43,7 @@ dependencies {
     testCompile "org.junit.jupiter:junit-jupiter:5.7.0"
     testCompile "org.hamcrest:hamcrest-library:2.2"
     testCompile "org.junit.jupiter:junit-jupiter-params:5.7.0"    
-    testCompile "org.mockito:mockito-junit-jupiter:3.6.0"
+    testCompile "org.mockito:mockito-junit-jupiter:3.9.0"
     testCompile "com.github.tomakehurst:wiremock:2.27.2"
     
     distBundle "com.argosnotary.argos:argos4j:1.0.2"
